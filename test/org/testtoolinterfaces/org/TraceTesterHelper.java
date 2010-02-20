@@ -6,7 +6,7 @@ package org.testtoolinterfaces.org;
 import org.testtoolinterfaces.utils.Trace;
 
 /**
- * @author Arjan Kranenbur
+ * @author Arjan Kranenburg
  *
  */
 public class TraceTesterHelper
