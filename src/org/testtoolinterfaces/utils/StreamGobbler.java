@@ -70,7 +70,7 @@ public class StreamGobbler extends Thread
                     pw.println(line);
             		Trace.println(Trace.ALL, "Output written to file");
                 }
-                System.out.println(myType + ">" + line);    
+                Trace.println(Trace.EXEC_PLUS, myType + ">" + line);    
             }
             if (pw != null)
             {
