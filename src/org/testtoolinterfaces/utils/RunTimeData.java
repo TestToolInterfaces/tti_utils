@@ -1,6 +1,7 @@
 package org.testtoolinterfaces.utils;
 
 //import java.io.File;
+import java.io.File;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
@@ -112,7 +113,7 @@ public class RunTimeData extends Hashtable<String, RunTimeVariable>
 	public <Type> Type getValueAs(Class<Type> aType, String aName)
 	{
 		Type varOfType = null;
-		if ( this.getType( aName ).equals(aType.getClass()) )
+		if ( this.getType( aName ).equals( aType ) )
 		{
 			varOfType = (Type) this.getValue(aName);
 		}
@@ -131,5 +132,95 @@ public class RunTimeData extends Hashtable<String, RunTimeVariable>
 	    	String key = keys.nextElement();
 	    	System.out.println( "(" + this.get(key).getType().getCanonicalName() + ")" + key );
 	    }
+	}
+
+	/**
+	 * Substitutes this string with variables (Strings or file-names) found in this runTimeData.
+	 * Variables in the string are indicated by {}, e.g. {user_home}\.pluginsettings,
+	 * 
+	 * A { that does not have a closing } does not mark the beginning of a variable and is treated as a normal '{'
+	 * {} cannot be nested, but variables can consist of other variables. These are substituted as well
+	 * \{ is substituted with '{'
+	 * \} is substituted with '}'
+	 * \\ is substituted with a single '\'
+	 * 
+	 * @param anOriginalString
+	 * @return a String where the variables are substituted
+	 */
+
+	public String substituteVars( String anOriginalString )
+	{
+	    Trace.println(Trace.UTIL, "substituteVars( " + anOriginalString + " )", true);
+		StringBuffer returnStrbuf;
+
+		int firstEscape = anOriginalString.indexOf('\\');
+		int firstOpeningCurlyBracket = anOriginalString.indexOf('{');
+
+		if ( firstEscape < 0 && firstOpeningCurlyBracket < 0 )
+		{
+			return anOriginalString;
+		}
+		
+		if ( firstEscape < 0 )
+		{
+			firstEscape = anOriginalString.length()+1;
+		}
+		if ( firstOpeningCurlyBracket < 0 )
+		{
+			firstOpeningCurlyBracket = anOriginalString.length()+1;
+		}
+
+		if ( firstEscape < firstOpeningCurlyBracket )
+		{
+			// We have an escaped character
+			returnStrbuf = new StringBuffer( anOriginalString.substring(0, firstEscape) );
+
+			char escapedChar = anOriginalString.toCharArray()[firstEscape+1];
+			if ( escapedChar == '\\' || escapedChar == '{' || escapedChar == '}' )
+			{
+				returnStrbuf.append(escapedChar);
+			}
+			else
+			{
+				returnStrbuf.append('\\').append(escapedChar);
+			}
+
+			String restString = anOriginalString.substring(firstEscape+2);
+			returnStrbuf.append( this.substituteVars(restString) );
+		}
+		else
+		{
+			// We have a possible variable
+			returnStrbuf = new StringBuffer( anOriginalString.substring(0, firstOpeningCurlyBracket) );
+
+			String remainder = anOriginalString.substring(firstOpeningCurlyBracket+1);
+			int firstClosingCurlyBracket = remainder.indexOf('}');
+			
+			if ( firstClosingCurlyBracket > 0 )
+			{
+				String varName = remainder.substring(0, firstClosingCurlyBracket);
+				String varValue = "";
+				Class<?> varType = this.getType(varName);
+				if ( varType.equals(String.class) )
+				{
+					varValue = this.getValueAs(String.class, varName);
+				}
+				else if ( varType.equals(File.class) )
+				{
+					varValue = this.getValueAs(File.class, varName).getPath();
+				}
+
+				returnStrbuf.append( varValue );
+				
+				String restString = remainder.substring(firstClosingCurlyBracket+1);
+				returnStrbuf.append( this.substituteVars(restString) );
+			}
+			else
+			{
+				returnStrbuf.append( '{' ).append( this.substituteVars(remainder) );
+			}
+		}
+		
+		return returnStrbuf.toString();
 	}
 }

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.testtoolinterfaces.org;
+package org.testtoolinterfaces.utils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -9,9 +9,7 @@ import java.io.PrintStream;
 import junit.framework.TestCase;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.testtoolinterfaces.utils.Trace;
 
@@ -23,16 +21,7 @@ public class TraceTester extends TestCase
 {
 	private final ByteArrayOutputStream myOut = new ByteArrayOutputStream();
 	private final PrintStream myOrigOut = System.out;
-
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception
-	{
-	}
-
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception
-	{
-	}
+	private final String myNewline = System.getProperty( "line.separator" );
 
 	/**
 	 * @throws java.lang.Exception
@@ -67,14 +56,18 @@ public class TraceTester extends TestCase
 		traceObj.setTraceClass("org.testtoolinterfaces.utils.TraceTester");
 		traceObj.setTraceLevel(Trace.ALL);
 
+myOrigOut.println( "Once" );
 		Trace.print(Trace.EXEC, "testAddBaseClass");
+		myOrigOut.println( myOut.toString() );
 		assertEquals("Incorrect printout", "", myOut.toString());
 		myOut.reset();
 
 		traceObj.addBaseClass("org.testtoolinterfaces");
 
+myOrigOut.println( "Twice" );
 		Trace.print(Trace.EXEC, "testAddBaseClass", true);
-		assertEquals("Incorrect printout", " TraceTester.testAddBaseClass", myOut.toString());
+		myOrigOut.println( myOut.toString() );
+		assertEquals("Incorrect printout", " utils.TraceTester.testAddBaseClass", myOut.toString());
 		myOut.reset();
 	}
 
@@ -92,17 +85,20 @@ public class TraceTester extends TestCase
 
 		Trace.println(Trace.EXEC, "testSetDepth");
 		depthTestHelper();
-		assertEquals("Incorrect printout", " testSetDepth\n depthTestHelper\n", myOut.toString());
+		myOrigOut.println( myOut.toString() );
+		assertEquals("Incorrect printout", " testSetDepth" + myNewline + " depthTestHelper" + myNewline, myOut.toString());
 		myOut.reset();
 
 		traceObj.setDepth(1);
 		depthTestHelper();
-		assertEquals("Incorrect printout", " depthTestHelper\n+ depthTestHelper1\n", myOut.toString());
+		myOrigOut.println( myOut.toString() );
+		assertEquals("Incorrect printout", " depthTestHelper" + myNewline + "+ depthTestHelper1" + myNewline, myOut.toString());
 		myOut.reset();
 
 		traceObj.setDepth(2);
 		depthTestHelper();
-		assertEquals("Incorrect printout", " depthTestHelper\n+ depthTestHelper1\n++ depthTestHelper2\n", myOut.toString());
+		myOrigOut.println( myOut.toString() );
+		assertEquals("Incorrect printout", " depthTestHelper" + myNewline + "+ depthTestHelper1" + myNewline + "++ depthTestHelper2" + myNewline, myOut.toString());
 		myOut.reset();
 	}
 
@@ -119,12 +115,14 @@ public class TraceTester extends TestCase
 		traceObj.setTraceLevel(Trace.ALL);
 
 		Trace.print(Trace.EXEC, "testSetEnabled");
+		myOrigOut.println( myOut.toString() );
 		assertEquals("Incorrect printout", "", myOut.toString());
 		myOut.reset();
 
 		traceObj.setEnabled(true);
 
 		Trace.print(Trace.EXEC, "testSetEnabled");
+		myOrigOut.println( myOut.toString() );
 		assertEquals("Incorrect printout", " testSetEnabled", myOut.toString());
 		myOut.reset();
 	}
@@ -142,18 +140,21 @@ public class TraceTester extends TestCase
 		traceObj.setTraceLevel(Trace.ALL);
 
 		Trace.print(Trace.EXEC, "testSetTraceClass");
+		myOrigOut.println( myOut.toString() );
 		assertEquals("Incorrect printout", "", myOut.toString());
 		myOut.reset();
 
 		traceObj.setTraceClass("org.testtoolinterfaces.utils.TraceTester");
 
 		Trace.print(Trace.EXEC, "testSetTraceClass");
+		myOrigOut.println( myOut.toString() );
 		assertEquals("Incorrect printout", " testSetTraceClass", myOut.toString());
 		myOut.reset();
 
 		traceObj.setTraceClass("org.testtoolinterfaces.utils.TraceTester2");
 
 		Trace.print(Trace.EXEC, "testSetTraceClass");
+		myOrigOut.println( myOut.toString() );
 		assertEquals("Incorrect printout", "", myOut.toString());
 		myOut.reset();
 	}
@@ -171,12 +172,14 @@ public class TraceTester extends TestCase
 		traceObj.setTraceLevel(Trace.HIGH);
 
 		Trace.print(Trace.EXEC, "testSetTraceLevel");
+		myOrigOut.println( myOut.toString() );
 		assertEquals("Incorrect printout", "", myOut.toString());
 		myOut.reset();
 
 		traceObj.setTraceLevel(Trace.EXEC);
 
 		Trace.print(Trace.EXEC, "testSetTraceLevel");
+		myOrigOut.println( myOut.toString() );
 		assertEquals("Incorrect printout", " testSetTraceLevel", myOut.toString());
 		myOut.reset();
 
@@ -184,6 +187,7 @@ public class TraceTester extends TestCase
 
 		Trace.print(Trace.EXEC, "testSetTraceLevel2");
 		Trace.print(Trace.EXEC_UTIL, "testSetTraceLevel3");
+		myOrigOut.println( myOut.toString() );
 		assertEquals("Incorrect printout", " testSetTraceLevel2", myOut.toString());
 		myOut.reset();
 	}
@@ -201,9 +205,91 @@ public class TraceTester extends TestCase
 		traceObj.setTraceLevel(Trace.ALL);
 
 		Trace.println(Trace.EXEC);
-		assertEquals("Incorrect printout", " TraceTester.testPrintlnLEVEL\n", myOut.toString());
+		myOrigOut.println( myOut.toString() );
+		assertEquals("Incorrect printout", " utils.TraceTester.testPrintlnLEVEL" + myNewline, myOut.toString());
 		myOut.reset();
 
+	}
+
+	/**
+	 * Test method for {@link org.testtoolinterfaces.utils.Trace#append(org.testtoolinterfaces.utils.Trace.LEVEL, java.lang.String)}.
+	 */
+	@Test
+	public void testAppend()
+	{
+		Trace traceObj = Trace.getInstance();
+		traceObj.setEnabled(true);
+		traceObj.setDepth(3);
+		traceObj.setTraceClass("org.testtoolinterfaces.utils.TraceTester");
+		traceObj.setTraceLevel(Trace.ALL);
+
+		Trace.println(Trace.EXEC);
+		Trace.append(Trace.EXEC, "This is appended");
+		myOrigOut.println( myOut.toString() );
+		assertEquals("Incorrect printout", " utils.TraceTester.testAppend" + myNewline + "This is appended", myOut.toString());
+		myOut.reset();
+
+	}
+
+	/**
+	 * Test method for {@link org.testtoolinterfaces.utils.Trace#print(org.testtoolinterfaces.utils.Trace.LEVEL, java.lang.Throwable)}.
+	 */
+	@Test
+	public void testPrintThrowable()
+	{
+		Trace traceObj = Trace.getInstance();
+		traceObj.setEnabled(true);
+		traceObj.setDepth(3);
+		traceObj.setTraceClass("org.testtoolinterfaces.utils.TraceTester");
+		traceObj.setTraceLevel(Trace.ALL);
+
+		Trace.print( Trace.EXEC, new Exception("Throwable test") );
+		String output = myOut.toString();
+		int secondNewLinePos = output.indexOf(myNewline, output.indexOf(myNewline)+1);
+		String firstTwoLines = output.substring(0, secondNewLinePos);
+		myOrigOut.println( myOut.toString() );
+		assertEquals("Incorrect printout", " utils.TraceTester.testPrintThrowable" + myNewline + "java.lang.Exception: Throwable test", firstTwoLines);
+
+		myOut.reset();
+	}
+
+	/**
+	 * Test method for {@link org.testtoolinterfaces.utils.Trace#dumpSettingst()}.
+	 */
+	@Test
+	public void testDumpSettings()
+	{
+		Trace traceObj = Trace.getInstance();
+		traceObj.setEnabled(true);
+		traceObj.setDepth(3);
+		traceObj.setTraceClass("org.testtoolinterfaces.utils.TraceTester");
+		traceObj.setTraceLevel(Trace.SUITE);
+
+		traceObj.dumpSettings();
+		myOrigOut.println( myOut.toString() );
+		assertEquals( "Incorrect printout", "Enabled:    true" + myNewline + 
+											"Depth:      3" + myNewline +
+											"TraceClass: org.testtoolinterfaces.utils.TraceTester" + myNewline +
+											"TraceLevel: SUITE" + myNewline + 
+											"BaseClass:  org.testtoolinterfaces" + myNewline,
+					 myOut.toString());
+
+		myOut.reset();
+	}
+	
+	public void testUnknownClass()
+	{
+		Trace traceObj = Trace.getInstance();
+		traceObj.setEnabled(true);
+		traceObj.setDepth(3);
+		traceObj.setTraceClass("org.testtoolinterfaces.utils.OtherClass");
+		traceObj.setTraceLevel(Trace.ALL);
+
+		Trace.print(Trace.GETTER, "method", true);
+		myOrigOut.println( myOut.toString() );
+		assertEquals( "Incorrect printout", "", myOut.toString());
+
+		myOut.reset();
 	}
 	
 	private void depthTestHelper()

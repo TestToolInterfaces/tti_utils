@@ -52,9 +52,11 @@ public class RunTimeVariable
 	public void setValue( Object aValue )
 	{
 		Trace.println(Trace.SETTER, "setValue( " + aValue.toString() + " )", true);
-		if ( myType == aValue.getClass() )
-	    {
-			myValue = aValue;
-	    }
+//		if ( myType == aValue.getClass() )
+//	    {
+//			myValue = aValue;
+//	    }
+		myValue = aValue;
+		myType = aValue.getClass();
 	}
 }

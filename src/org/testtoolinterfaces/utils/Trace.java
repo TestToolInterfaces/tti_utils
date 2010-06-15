@@ -49,7 +49,9 @@ public class Trace
 	private String myTraceClass = "";
 	private LEVEL myTraceLevel = LEVEL.EXEC_PLUS;
 	private int myDepth = 3;
-	
+
+	private final static String NEWLINE = System.getProperty( "line.separator" );
+
 	/**
 	 * 
 	 */
@@ -184,7 +186,7 @@ public class Trace
 	 */
 	public static void println(LEVEL aLevel, String aMethod, boolean aPrintClass)
 	{
-		print(aLevel, aMethod + '\n', aPrintClass);
+		print(aLevel, aMethod + NEWLINE, aPrintClass);
 	}
 
 	/**
@@ -244,14 +246,12 @@ public class Trace
 				String className = getClassName(stack);
 				int depth = getDepth(stack, aMethod, className);
 
-//if (stack.size() > 0) System.err.println("ClassName0 is " + stack.get(0).getClassName() );
-//if (stack.size() > 1) System.err.println("ClassName1 is " + stack.get(1).getClassName() );
-//if (stack.size() > 2) System.err.println("ClassName2 is " + stack.get(2).getClassName() );
 				if ( depth <= myDepth )
 				{
 					if (aPrintClass)
 					{
-						aMethod = className + "." + aMethod;
+						String strippedClassPath = getStripedClassPath( stack );
+						aMethod = strippedClassPath + "." + aMethod;
 					}
 					String prefix = getPrefix( depth );
 					System.out.print(prefix + aMethod);
@@ -286,7 +286,7 @@ public class Trace
 			if (stack.size() > 0)
 			{
 				String method = stack.get(0).getMethodName();
-				_print(aLevel, method + '\n', aPrintClass);
+				_print(aLevel, method + NEWLINE, aPrintClass);
 			}
 		}
 	}
@@ -306,6 +306,7 @@ public class Trace
 				int depth = getDepth(stack, method, className);
 				if ( depth <= myDepth )
 				{
+					_print(aLevel, method + NEWLINE, true);
 					anE.printStackTrace(System.out);
 				}
 			}
@@ -344,7 +345,6 @@ public class Trace
 		boolean foundClass = false;
 		int depth = 99;
 
-//System.err.print( "Depth of " + aMethod );
 		for (int i = aStack.size()-1; i>=0; i--)
 		{
 			String stackLine = aStack.get(i).getClassName();
@@ -362,14 +362,13 @@ public class Trace
 			}
 
 			if ( foundClass 
-				 && shortElClssName.equals(aClass) 
+				 && shortElClssName.endsWith(aClass) 
 				 && aStack.get(i).getMethodName().equals(aMethod) )
 			{
-//System.err.println( " is (2) " + depth );
 				return depth;
 			}
 		}
-//System.err.println( " is " + depth );
+
 		return depth;
 	}
 
@@ -381,21 +380,45 @@ public class Trace
 		return classPath[ classPath.length-1 ];
 	}
 	
-	private String getStrippedClassName( String aClassName )
+	private String getStrippedClassName( String aStackLine )
 	{
-		String shortClassName = aClassName;
+		String shortClassName = aStackLine;
+
 		for (int j = 0; j < myBaseClasses.size(); j++)
 		{
-			if ( aClassName.startsWith(myBaseClasses.get(j)) )
+			if ( aStackLine.startsWith(myBaseClasses.get(j)) )
 			{
-				shortClassName = aClassName.replaceFirst(myBaseClasses.get(j), "");
+				shortClassName = aStackLine.replaceFirst(myBaseClasses.get(j), "");
 				shortClassName = shortClassName.replaceFirst("\\.", "");
 				
 				// As soon as we have a match, we return the shortened class name
 				return shortClassName;
 			}
 		}
+
+		// Should not get here, but keeping this just in case.
 		return shortClassName; // If no match, we return the stackLine
+	}
+
+	private String getStripedClassPath(ArrayList<StackTraceElement> aStack)
+	{
+		String fullClassPath = aStack.get(0).getClassName();
+
+		String strippedClassPath = fullClassPath;
+		for (int j = 0; j < myBaseClasses.size(); j++)
+		{
+			if ( strippedClassPath.startsWith(myBaseClasses.get(j)) )
+			{
+				strippedClassPath = fullClassPath.replaceFirst(myBaseClasses.get(j), "");
+				strippedClassPath = strippedClassPath.replaceFirst("\\.", "");
+				
+				// As soon as we have a match, we return the shortened class name
+				return strippedClassPath;
+			}
+		}
+
+		// Should not get here, but keeping this just in case.
+		return strippedClassPath; // If no match, we return the stackLine
 	}
 
 	private static String getPrefix( int aDepth )

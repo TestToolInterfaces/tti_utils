@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.testtoolinterfaces.org;
+package org.testtoolinterfaces.utils;
 
 import org.testtoolinterfaces.utils.Trace;
 
