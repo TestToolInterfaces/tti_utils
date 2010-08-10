@@ -183,11 +183,11 @@ public class RunTimeDataTester
 		RunTimeVariable rtVar = new RunTimeVariable("testvar", new File( dirName ));
 		rtData.add(rtVar);
 		
-		String testString = "/this/path/has/a{testvar}/and/more";
+		String testString = "/this/path/has/a/{testvar}/and/more";
 		String returnedString = rtData.substituteVars(testString);
 		
     	Assert.assertEquals( "Incorrect substitution",
-    			"/this/path/has/a" + dirName + "/and/more",
+    			"/this/path/has/a/" + dirName + "/and/more",
     			returnedString );
 	}
 
@@ -267,6 +267,36 @@ public class RunTimeDataTester
 		parentRtData.add(rtVar);
 		
     	Assert.assertEquals( "Incorrect value", null, rtData.getValue("nonExisting") );
+	}
+
+	/**
+	 * Test method for {@link org.testtoolinterfaces.utils.RunTimeData#getValue(java.lang.String)}.
+	 * 
+	 */
+	@Test
+	public void testGetValueAsBoolean()
+	{
+		RunTimeData rtData = new RunTimeData();
+
+		RunTimeVariable rtVar = new RunTimeVariable("testvar", true);
+		rtData.add(rtVar);
+		
+    	Assert.assertEquals( "Incorrect value", true, rtData.getValueAsBoolean("testvar") );
+	}
+
+	/**
+	 * Test method for {@link org.testtoolinterfaces.utils.RunTimeData#getValue(java.lang.String)}.
+	 * 
+	 */
+	@Test
+	public void testGetValueAsBooleanIncorrectType()
+	{
+		RunTimeData rtData = new RunTimeData();
+
+		RunTimeVariable rtVar = new RunTimeVariable("testvar", "String");
+		rtData.add(rtVar);
+		
+    	Assert.assertEquals( "Incorrect value", null, rtData.getValueAsBoolean("testvar") );
 	}
 
 	/**

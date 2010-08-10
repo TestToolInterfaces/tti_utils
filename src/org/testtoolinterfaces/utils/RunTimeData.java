@@ -2,6 +2,7 @@ package org.testtoolinterfaces.utils;
 
 //import java.io.File;
 import java.io.File;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
@@ -77,52 +78,81 @@ public class RunTimeData extends Hashtable<String, RunTimeVariable>
 		return null;
 	}
 
-//	/**
-//	 * @return the value as a File object
-//	 *         null if it doesn't exist or is not a File
-//	 */
-//	public File getValueAsFile( String aName )
-//	{
-//		File varFile = null;
-//		if ( this.getType( aName ).equals(File.class) )
-//		{
-//			varFile = (File) this.getValue(aName);
-//		}
-//		return varFile;
-//	}
-//
-//	/**
-//	 * @return the value as a String object
-//	 *         null if it doesn't exist or is not a String
-//	 */
-//	public String getValueAsString( String aName )
-//	{
-//		String varString = null;
-//		if ( this.getType( aName ).equals(String.class) )
-//		{
-//			varString = (String) this.getValue(aName);
-//		}
-//		return varString;
-//	}
+	/**
+	 * @return the value as a String object
+	 *         null if it doesn't exist or is not a String
+	 */
+	public String getValueAsString( String aName )
+	{
+		return getValueAs( String.class, aName );
+	}
+
+	/**
+	 * @return the value as a File object
+	 *         null if it doesn't exist or is not a File
+	 */
+	public File getValueAsFile( String aName )
+	{
+		return getValueAs( File.class, aName );
+	}
+
+	/**
+	 * @return the value as a boolean object
+	 *         false if it doesn't exist or is not a Boolean
+	 */
+	public boolean getValueAsBoolean( String aName )
+	{
+		boolean varOfType = false;
+		Object value = this.getValue(aName);
+		if ( value != null && this.getType( aName ).equals( Boolean.class ) )
+		{
+			varOfType = (Boolean) value;
+		}
+		return varOfType;
+	}
+
+	/**
+	 * @return the value as a Date object
+	 *         null if it doesn't exist or is not a String
+	 */
+	public Date getValueAsDate( String aName )
+	{
+		return getValueAs( Date.class, aName );
+	}
 
 	/**
 	 * @return the value as a <Type> object
 	 *         null if it doesn't exist or is not a <Type>
+	 *         In case of Boolean, false is returned in stead of null. Be carefull to use this for booleans
 	 */
 	@SuppressWarnings("unchecked")
 	public <Type> Type getValueAs(Class<Type> aType, String aName)
 	{
 		Type varOfType = null;
-		if ( this.getType( aName ).equals( aType ) )
+		if ( aType == Boolean.class )
 		{
-			varOfType = (Type) this.getValue(aName);
+			varOfType = (Type) Boolean.FALSE;
+		}
+
+		Object value = this.getValue(aName);
+		if ( value != null && this.getType( aName ).equals( aType ) )
+		{
+			varOfType = (Type) value;
 		}
 		return varOfType;
 	}
 
-	public void add( RunTimeVariable aVariable )
+	/**
+	 * Adds the variable to the RunTimeData.
+	 * 
+	 * Overwrites the variable if a variable with the same name already exists.
+	 * Returns the 'old' variable, if any.
+	 * 
+	 * @param aVariable
+	 */
+	public RunTimeVariable add( RunTimeVariable aVariable )
 	{
-		this.put(aVariable.getName(), aVariable);
+		return this.put(aVariable.getName(), aVariable);
 	}
 	
 	public void print()
@@ -130,7 +160,24 @@ public class RunTimeData extends Hashtable<String, RunTimeVariable>
 	    for (Enumeration<String> keys = this.keys(); keys.hasMoreElements();)
 	    {
 	    	String key = keys.nextElement();
-	    	System.out.println( "(" + this.get(key).getType().getCanonicalName() + ")" + key );
+	    	RunTimeVariable rtVar = this.get(key);
+	    	if ( rtVar == null )
+	    	{
+	    		// This is only possible when rtData.put( key, null ) was used in stead of rtData.add( aVariable )
+	    		throw new NullPointerException( "null-object added to RuntimeData" );
+	    	}
+
+	    	System.out.print( key + " -> ("
+					+ rtVar.getType().getCanonicalName() + ") " );
+	    	Object value = rtVar.getValue();
+	    	if ( value != null )
+	    	{
+	    		System.out.println( value.toString() );
+	    	}
+	    	else
+	    	{
+	    		System.out.println( "null" );
+	    	}
 	    }
 	}
 
@@ -201,19 +248,26 @@ public class RunTimeData extends Hashtable<String, RunTimeVariable>
 				String varName = remainder.substring(0, firstClosingCurlyBracket);
 				String varValue = "";
 				Class<?> varType = this.getType(varName);
-				if ( varType.equals(String.class) )
+				if ( varType != null )
 				{
-					varValue = this.getValueAs(String.class, varName);
-				}
-				else if ( varType.equals(File.class) )
-				{
-					varValue = this.getValueAs(File.class, varName).getPath();
-				}
+					if ( varType.equals(String.class) )
+					{
+						varValue = this.getValueAs(String.class, varName);
+					}
+					else if ( varType.equals(File.class) )
+					{
+						varValue = this.getValueAs(File.class, varName).getPath();
+					}
 
-				returnStrbuf.append( varValue );
-				
-				String restString = remainder.substring(firstClosingCurlyBracket+1);
-				returnStrbuf.append( this.substituteVars(restString) );
+					returnStrbuf.append( varValue );
+
+					String restString = remainder.substring(firstClosingCurlyBracket+1);
+					returnStrbuf.append( this.substituteVars(restString) );
+				}
+				else
+				{
+					returnStrbuf.append( '{' ).append( this.substituteVars(remainder) );
+				}
 			}
 			else
 			{
@@ -223,4 +277,12 @@ public class RunTimeData extends Hashtable<String, RunTimeVariable>
 		
 		return returnStrbuf.toString();
 	}
+	
+	//TODO encode - The opposite of substituteVars needed to not have multiple substituteVars do wrong things.
+	//              Also to 'store' variables encoded
+//	public String encode( String aString )
+//	{
+//	
+//		return null;
+//	}
 }

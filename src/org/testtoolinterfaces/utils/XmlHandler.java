@@ -6,6 +6,10 @@ package org.testtoolinterfaces.utils;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
@@ -50,6 +54,28 @@ public abstract class XmlHandler extends DefaultHandler
 
 		myStartElement = aTag;
 	}
+
+	/**
+	 * @param aTag The XML element used to indicate this XML part
+	 * @throws SAXException 
+	 * @throws ParserConfigurationException 
+	 */
+	public XmlHandler( String aTag ) throws ParserConfigurationException, SAXException
+	{
+		Trace.println(Trace.LEVEL.CONSTRUCTOR);
+
+	    SAXParserFactory spf = SAXParserFactory.newInstance();
+	    spf.setNamespaceAware(false);
+
+		SAXParser saxParser = spf.newSAXParser();
+		myXmlReader = saxParser.getXMLReader();
+
+    	myStartElementHandlers = new Hashtable<String, XmlHandler>();
+		myEndElementHandlers = new Hashtable<String, XmlHandler>();
+
+		myStartElement = aTag;
+	}
+
 
 	/**
 	 *  Adds an Element Handler for the specified start tag
