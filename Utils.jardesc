@@ -4,7 +4,7 @@
     <options buildIfNeeded="true" compress="true" descriptionLocation="/Utils/Utils.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="true" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
     <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
     <selectedProjects/>
-    <manifest generateManifest="false" manifestLocation="/Utils/Utils.manifest" manifestVersion="1.0" reuseManifest="true" saveManifest="true" usesManifest="true">
+    <manifest generateManifest="false" manifestLocation="/Utils/Utils.manifest" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
         <sealing sealJar="false">
             <packagesToSeal/>
             <packagesToUnSeal/>
@@ -13,6 +13,5 @@
     <selectedElements exportClassFiles="true" exportJavaFiles="true" exportOutputFolder="false">
         <javaElement handleIdentifier="=Utils/src"/>
         <file path="/Utils/License_lgpl-3.0.txt"/>
-        <file path="/Utils/Utils.manifest"/>
     </selectedElements>
 </jardesc>
