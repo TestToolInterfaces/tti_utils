@@ -1,26 +1,25 @@
 <?xml version="1.0"?>
  
-<project name="CmdLineInterface" default="CreateJarFile">
+<project name="Utils" default="CreateJarFile">
 	<target name="CreateJarFile">
 
 		<delete file="../Utils.jar"/>
 		<property name="version.num" value="0.1.0"/>
 	    <buildnumber file="build.num"/>
-		<manifest file="MANIFEST.MF">
-	        <attribute name="Created-By" value="TestToolInterfaces.org"/>
-	        <attribute name="Built-By" value="${user.name}"/>
-	        <attribute name="Implementation-Title" value="Test Tool Interfaces Utilities" />
-	        <attribute name="Implementation-Version" value="${version.num}.${build.number}"/> 
-	        <attribute name="Implementation-Vendor" value="Open Source - Arjan Kranenburg" />
-	        <attribute name="Specification-Title" value="Test Tool Interfaces Utilities" />
-	        <attribute name="Specification-Version" value="0.1" />
-	        <attribute name="Specification-Vendor" value="TestToolInterfaces.org" />
-	    </manifest>
-		
 		<jar destfile="../Utils.jar" manifest="MANIFEST.MF">
 			<zipfileset dir="bin" prefix="" />
+			<zipfileset dir="src" prefix="" />
+
+			<manifest>
+		        <attribute name="Created-By" value="TestToolInterfaces.org"/>
+		        <attribute name="Built-By" value="${user.name}"/>
+		        <attribute name="Implementation-Title" value="Test Tool Interfaces Utilities" />
+		        <attribute name="Implementation-Version" value="${version.num}.${build.number}"/> 
+		        <attribute name="Implementation-Vendor" value="Open Source - Arjan Kranenburg" />
+		        <attribute name="Specification-Title" value="Test Tool Interfaces Utilities" />
+		        <attribute name="Specification-Version" value="0.1" />
+		        <attribute name="Specification-Vendor" value="TestToolInterfaces.org" />
+		    </manifest>
 		</jar>
-		
-		<delete file="MANIFEST.MF"/>
 	</target>
 </project>
