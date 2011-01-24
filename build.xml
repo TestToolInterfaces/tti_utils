@@ -6,7 +6,7 @@
 		<delete file="../Utils.jar"/>
 		<property name="version.num" value="0.1.0"/>
 	    <buildnumber file="build.num"/>
-		<jar destfile="../Utils.jar" manifest="MANIFEST.MF">
+		<jar destfile="../Utils.jar">
 			<zipfileset dir="bin" prefix="" />
 			<zipfileset dir="src" prefix="" />
 
