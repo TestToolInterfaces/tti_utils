@@ -46,7 +46,7 @@ public abstract class XmlHandler extends DefaultHandler
 	 */
 	public XmlHandler( XMLReader anXmlReader, String aTag )
 	{
-		Trace.println(Trace.LEVEL.CONSTRUCTOR);
+		Trace.println(Trace.CONSTRUCTOR);
 
     	myStartElementHandlers = new Hashtable<String, XmlHandler>();
 		myEndElementHandlers = new Hashtable<String, XmlHandler>();
@@ -62,7 +62,7 @@ public abstract class XmlHandler extends DefaultHandler
 	 */
 	public XmlHandler( String aTag ) throws ParserConfigurationException, SAXException
 	{
-		Trace.println(Trace.LEVEL.CONSTRUCTOR);
+		Trace.println(Trace.CONSTRUCTOR);
 
 	    SAXParserFactory spf = SAXParserFactory.newInstance();
 	    spf.setNamespaceAware(false);
@@ -85,7 +85,7 @@ public abstract class XmlHandler extends DefaultHandler
 	 */
 	public void addStartElementHandler( String anElement, XmlHandler aHandler )
 	{
-		Trace.println(Trace.LEVEL.UTIL, "addStartElementHandler( " + aHandler.toString() + " )", true);
+		Trace.println(Trace.UTIL, "addStartElementHandler( " + aHandler.toString() + " )", true);
 
     	myStartElementHandlers.put( anElement, aHandler );
 	}
@@ -97,7 +97,7 @@ public abstract class XmlHandler extends DefaultHandler
 	 */
 	public void removeStartElementHandler( String anElement )
 	{
-		Trace.println(Trace.LEVEL.UTIL, "removeStartElementHandler( " + anElement + " )", true);
+		Trace.println(Trace.UTIL, "removeStartElementHandler( " + anElement + " )", true);
 
     	myStartElementHandlers.remove( anElement );
 	}
@@ -111,7 +111,7 @@ public abstract class XmlHandler extends DefaultHandler
 	 */
 	public void addEndElementHandler( String anElement, XmlHandler aHandler )
 	{
-		Trace.println(Trace.LEVEL.UTIL, "addEndElementHandler( " + aHandler.toString() + " )", true);
+		Trace.println(Trace.UTIL, "addEndElementHandler( " + aHandler.toString() + " )", true);
 
     	myEndElementHandlers.put( anElement, aHandler );
 	}
@@ -123,7 +123,7 @@ public abstract class XmlHandler extends DefaultHandler
 	 */
 	public void removeEndElementHandler( String anElement )
 	{
-		Trace.println(Trace.LEVEL.UTIL, "removeEndElementHandler( " + anElement + " )", true);
+		Trace.println(Trace.UTIL, "removeEndElementHandler( " + anElement + " )", true);
 
     	myEndElementHandlers.remove( anElement );
 	}
@@ -135,7 +135,7 @@ public abstract class XmlHandler extends DefaultHandler
 	final public void startElement(String aNamespaceURI, String aLocalName,
 			String aQualifiedName, Attributes anAtt) throws SAXException
 	{
-		Trace.println(Trace.LEVEL.UTIL, "startElement( " + aQualifiedName + " )", true);
+		Trace.println(Trace.UTIL, "startElement( " + aQualifiedName + " )", true);
 
 		this.handleGoToChildElement(aQualifiedName);
 
@@ -166,7 +166,7 @@ public abstract class XmlHandler extends DefaultHandler
     final public void characters(char ch[], int start, int length)
             throws SAXException
     {
-		Trace.println(Trace.LEVEL.UTIL);
+		Trace.println(Trace.UTIL);
 
     	String aValue = new String(ch, start, length);
     	this.handleCharacters(aValue);
@@ -181,7 +181,7 @@ public abstract class XmlHandler extends DefaultHandler
                            String aQualifiedName)
             throws SAXException
     {
-		Trace.println(Trace.LEVEL.UTIL, "endElement( " + aQualifiedName + " )", true);
+		Trace.println(Trace.UTIL, "endElement( " + aQualifiedName + " )", true);
     	
     	this.handleEndElement(aQualifiedName);
 
@@ -212,7 +212,7 @@ public abstract class XmlHandler extends DefaultHandler
 	 */
 	public String getStartElement()
 	{
-		Trace.println(Trace.LEVEL.GETTER);
+		Trace.println(Trace.GETTER);
 		return myStartElement;
 	}
 	
@@ -221,7 +221,7 @@ public abstract class XmlHandler extends DefaultHandler
 	 */
 	public String getValue()
 	{
-		Trace.println(Trace.LEVEL.GETTER);
+		Trace.println(Trace.GETTER);
 		return myValue;
 	}
 
@@ -232,7 +232,7 @@ public abstract class XmlHandler extends DefaultHandler
 	 */
 	protected void setValue( String aValue )
 	{
-		Trace.println(Trace.LEVEL.SETTER, "setValue( " + aValue + " )", true);
+		Trace.println(Trace.SETTER, "setValue( " + aValue + " )", true);
 		myValue = aValue;
 	}
 	
@@ -243,7 +243,7 @@ public abstract class XmlHandler extends DefaultHandler
 	 */
 	protected void appendValue( String aValue )
 	{
-		Trace.println(Trace.LEVEL.UTIL, "appendValue( " + aValue + " )", true);
+		Trace.println(Trace.UTIL, "appendValue( " + aValue + " )", true);
 		myValue += aValue;
 	}
 
@@ -252,7 +252,7 @@ public abstract class XmlHandler extends DefaultHandler
 	 */
 	public void reset( )
 	{
-		Trace.println(Trace.LEVEL.UTIL);
+		Trace.println(Trace.UTIL);
 		myValue = "";
 	}
 	
