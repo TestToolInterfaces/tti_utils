@@ -1,6 +1,5 @@
 package org.testtoolinterfaces.utils;
 
-//import java.io.File;
 import java.io.File;
 import java.util.Date;
 import java.util.Enumeration;
@@ -132,6 +131,10 @@ public class RunTimeData extends Hashtable<String, RunTimeVariable>
 		if ( aType == Boolean.class )
 		{
 			varOfType = (Type) Boolean.FALSE;
+		} 
+		else if ( aType == Integer.class )
+		{
+			varOfType = (Type) new Integer( 0 );
 		}
 
 		Object value = this.getValue(aName);
