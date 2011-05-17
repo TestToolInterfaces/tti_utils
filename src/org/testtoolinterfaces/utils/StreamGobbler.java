@@ -17,20 +17,20 @@ public class StreamGobbler extends Thread
 	public static long MAX_WAIT = 2;
 	
     private InputStream myIs;
-    private String myType;
     private OutputStream myOs;
     
     /**
+     * @deprecated the type is no longer used
      * @param myIs		The Input Stream
      * @param myType	the type of input stream
      */
     public StreamGobbler(InputStream anIs, String aType)
     {
         myIs = anIs;
-        myType = aType;
     }
     
     /**
+     * @deprecated the type is no longer used
      * @param myIs		The Input Stream
      * @param myType	The type of input stream
      * @param redirect	The Output Stream to redirect the input
@@ -38,15 +38,30 @@ public class StreamGobbler extends Thread
     public StreamGobbler(InputStream is, String type, OutputStream redirect)
     {
         myIs = is;
-        myType = type;
+        myOs = redirect;
+    }
+   
+    /**
+     * @param myIs		The Input Stream
+     */
+    public StreamGobbler(InputStream anIs)
+    {
+        myIs = anIs;
+    }
+    
+    /**
+     * @param myIs		The Input Stream
+     * @param redirect	The Output Stream to redirect the input
+     */
+    public StreamGobbler(InputStream is, OutputStream redirect)
+    {
+        myIs = is;
         myOs = redirect;
     }
    
    /** 
     * Reads lines from the Input Stream and writes it to stdout and the
     * Output Stream.
-    * 
-    * The print to stdout is prefixed with the type and a '>' character
     * 
     */
     public void run()
@@ -70,7 +85,7 @@ public class StreamGobbler extends Thread
                     pw.println(line);
             		Trace.println(Trace.ALL, "Output written to file");
                 }
-                Trace.println(Trace.EXEC_PLUS, myType + ">" + line);    
+                Trace.println(Trace.EXEC_PLUS, line);    
             }
             if (pw != null)
             {
@@ -82,5 +97,5 @@ public class StreamGobbler extends Thread
         {
             ioe.printStackTrace();  
         }
-    }
+	}
 }
