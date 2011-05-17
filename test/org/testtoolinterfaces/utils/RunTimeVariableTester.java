@@ -1,7 +1,5 @@
 package org.testtoolinterfaces.utils;
 
-import java.io.File;
-
 import junit.framework.Assert;
 
 import org.junit.AfterClass;

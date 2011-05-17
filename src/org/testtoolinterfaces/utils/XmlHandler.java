@@ -13,7 +13,6 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -27,12 +26,12 @@ public abstract class XmlHandler extends DefaultHandler
 	private String myStartElement = "";
 	private String myValue = "";
 
-	public abstract void handleStartElement( String aQualifiedName ) throws SAXParseException; 
-    public abstract void processElementAttributes( String qualifiedName, Attributes att ) throws SAXParseException;
-    public abstract void handleGoToChildElement( String aQualifiedName ) throws SAXParseException;
-    public abstract void handleCharacters( String aValue ) throws SAXParseException; 
-    public abstract void handleEndElement( String aQualifiedName ) throws SAXParseException;
-    public abstract void handleReturnFromChildElement( String aQualifiedName, XmlHandler aChildXmlHandler );
+	public abstract void handleStartElement( String aQualifiedName ) throws TTIException; 
+    public abstract void processElementAttributes( String qualifiedName, Attributes att ) throws TTIException;
+    public abstract void handleGoToChildElement( String aQualifiedName ) throws TTIException;
+    public abstract void handleCharacters( String aValue ) throws TTIException; 
+    public abstract void handleEndElement( String aQualifiedName ) throws TTIException;
+    public abstract void handleReturnFromChildElement( String aQualifiedName, XmlHandler aChildXmlHandler ) throws TTIException;
 
 	private Hashtable<String, XmlHandler> myStartElementHandlers;
     private Hashtable<String, XmlHandler> myEndElementHandlers;
@@ -137,25 +136,32 @@ public abstract class XmlHandler extends DefaultHandler
 	{
 		Trace.println(Trace.UTIL, "startElement( " + aQualifiedName + " )", true);
 
-		this.handleGoToChildElement(aQualifiedName);
-
-		XmlHandler aHandler = this;
-		for (Enumeration<String> keys = myStartElementHandlers.keys(); keys.hasMoreElements();)
+		try
 		{
-			String key = keys.nextElement();
-			if (aQualifiedName.equalsIgnoreCase(key))
+			this.handleGoToChildElement(aQualifiedName);
+
+			XmlHandler aHandler = this;
+			for (Enumeration<String> keys = myStartElementHandlers.keys(); keys.hasMoreElements();)
 			{
-				aHandler = myStartElementHandlers.get(key);
+				String key = keys.nextElement();
+				if (aQualifiedName.equalsIgnoreCase(key))
+				{
+					aHandler = myStartElementHandlers.get(key);
+				}
+			}
+	
+			myXmlReader.setContentHandler(aHandler);
+			aHandler.setDocumentLocator(this.getLocator());
+			aHandler.handleStartElement(aQualifiedName);
+	
+			if (anAtt.getLength() != 0)
+			{
+				aHandler.processElementAttributes(aQualifiedName, anAtt);
 			}
 		}
-
-		myXmlReader.setContentHandler(aHandler);
-		aHandler.setDocumentLocator(this.getLocator());
-		aHandler.handleStartElement(aQualifiedName);
-
-		if (anAtt.getLength() != 0)
+		catch (TTIException e)
 		{
-			aHandler.processElementAttributes(aQualifiedName, anAtt);
+			throw new SAXException( e );
 		}
 	}
 
@@ -169,7 +175,14 @@ public abstract class XmlHandler extends DefaultHandler
 		Trace.println(Trace.UTIL);
 
     	String aValue = new String(ch, start, length);
-    	this.handleCharacters(aValue);
+    	try
+		{
+			this.handleCharacters(aValue);
+		}
+		catch (TTIException e)
+		{
+			throw new SAXException( e );
+		}
     }
     
     // SAX call this method when it encounters an end tag
@@ -183,20 +196,27 @@ public abstract class XmlHandler extends DefaultHandler
     {
 		Trace.println(Trace.UTIL, "endElement( " + aQualifiedName + " )", true);
     	
-    	this.handleEndElement(aQualifiedName);
+    	try
+		{
+			this.handleEndElement(aQualifiedName);
 
-    	if (!myEndElementHandlers.isEmpty())
-	    {
-		    for (Enumeration<String> keys = myEndElementHandlers.keys(); keys.hasMoreElements();)
+	    	if (!myEndElementHandlers.isEmpty())
 		    {
-		    	String key = keys.nextElement();
-		    	if (aQualifiedName.equalsIgnoreCase(key))
-		    	{
-		            myXmlReader.setContentHandler(myEndElementHandlers.get(key));
-		            myEndElementHandlers.get(key).handleReturnFromChildElement(aQualifiedName, this);
-		    	}
+			    for (Enumeration<String> keys = myEndElementHandlers.keys(); keys.hasMoreElements();)
+			    {
+			    	String key = keys.nextElement();
+			    	if (aQualifiedName.equalsIgnoreCase(key))
+			    	{
+			            myXmlReader.setContentHandler(myEndElementHandlers.get(key));
+			            myEndElementHandlers.get(key).handleReturnFromChildElement(aQualifiedName, this);
+			    	}
+			    }
 		    }
-	    }
+		}
+		catch (TTIException e)
+		{
+			throw new SAXException( e );
+		}
     }
     
 	/**

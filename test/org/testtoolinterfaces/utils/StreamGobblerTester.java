@@ -2,9 +2,6 @@ package org.testtoolinterfaces.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.PrintStream;
 
 import junit.framework.Assert;
@@ -67,7 +64,7 @@ public class StreamGobblerTester extends TestCase
 		Assert.assertEquals("First Line", inputString, output.toString());
 	}
 
-	//	/**
+//	/**
 //	 * Test method to test regular input to a file.
 //	 * 
 //	 */
