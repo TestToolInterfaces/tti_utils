@@ -203,7 +203,7 @@ public class RunTimeDataTester
 		RunTimeVariable rtVar = new RunTimeVariable("testvar", "value");
 		rtData.add(rtVar);
 		
-    	Assert.assertEquals( "Incorrect value", rtVar, rtData.get("testvar") );
+    	Assert.assertEquals( "Get variable", rtVar, rtData.get("testvar") );
 	}
 
 	/**
@@ -219,7 +219,7 @@ public class RunTimeDataTester
 		RunTimeVariable rtVar = new RunTimeVariable("testvar", "value");
 		parentRtData.add(rtVar);
 		
-    	Assert.assertEquals( "Incorrect value", rtVar, rtData.get("testvar") );
+    	Assert.assertEquals( "Get variable parent", rtVar, rtData.get("testvar") );
 	}
 
 	/**
@@ -234,7 +234,7 @@ public class RunTimeDataTester
 		RunTimeVariable rtVar = new RunTimeVariable("testvar", "value");
 		rtData.add(rtVar);
 		
-    	Assert.assertEquals( "Incorrect value", "value", rtData.getValue("testvar") );
+    	Assert.assertEquals( "Valid value", "value", rtData.getValue("testvar") );
 	}
 
 	/**
@@ -250,7 +250,7 @@ public class RunTimeDataTester
 		RunTimeVariable rtVar = new RunTimeVariable("testvar", "value");
 		parentRtData.add(rtVar);
 		
-    	Assert.assertEquals( "Incorrect value", "value", rtData.getValue("testvar") );
+    	Assert.assertEquals( "Valid value parent", "value", rtData.getValue("testvar") );
 	}
 
 	/**
@@ -266,7 +266,7 @@ public class RunTimeDataTester
 		RunTimeVariable rtVar = new RunTimeVariable("testvar", "value");
 		parentRtData.add(rtVar);
 		
-    	Assert.assertEquals( "Incorrect value", null, rtData.getValue("nonExisting") );
+    	Assert.assertEquals( "Non-existing value", null, rtData.getValue("nonExisting") );
 	}
 
 	/**
@@ -281,7 +281,7 @@ public class RunTimeDataTester
 		RunTimeVariable rtVar = new RunTimeVariable("testvar", true);
 		rtData.add(rtVar);
 		
-    	Assert.assertEquals( "Incorrect value", true, rtData.getValueAsBoolean("testvar") );
+    	Assert.assertEquals( "Valid boolean", true, rtData.getValueAsBoolean("testvar") );
 	}
 
 	/**
@@ -296,7 +296,7 @@ public class RunTimeDataTester
 		RunTimeVariable rtVar = new RunTimeVariable("testvar", "String");
 		rtData.add(rtVar);
 		
-    	Assert.assertEquals( "Incorrect value", null, rtData.getValueAsBoolean("testvar") );
+    	Assert.assertEquals( "Incorrect boolean", false, rtData.getValueAsBoolean("testvar") );
 	}
 
 	/**
@@ -311,7 +311,7 @@ public class RunTimeDataTester
 		RunTimeVariable rtVar = new RunTimeVariable("testvar", "value");
 		rtData.add(rtVar);
 		
-    	Assert.assertEquals( "Incorrect value", java.lang.String.class, rtData.getType("testvar") );
+    	Assert.assertEquals( "Get type of String", java.lang.String.class, rtData.getType("testvar") );
 	}
 
 	/**
@@ -327,7 +327,7 @@ public class RunTimeDataTester
 		RunTimeVariable rtVar = new RunTimeVariable("testvar", "value");
 		parentRtData.add(rtVar);
 		
-    	Assert.assertEquals( "Incorrect value", java.lang.String.class, rtData.getType("testvar") );
+    	Assert.assertEquals( "Get type of String from parent", java.lang.String.class, rtData.getType("testvar") );
 	}
 
 	/**
@@ -343,6 +343,6 @@ public class RunTimeDataTester
 		RunTimeVariable rtVar = new RunTimeVariable("testvar", "value");
 		parentRtData.add(rtVar);
 		
-    	Assert.assertEquals( "Incorrect value", null, rtData.getType("nonExisting") );
+    	Assert.assertEquals( "Get Type of non-existing variable", null, rtData.getType("nonExisting") );
 	}
 }
