@@ -15,7 +15,7 @@ public final class GenericTagAndBooleanXmlHandler extends XmlHandler
 	public GenericTagAndBooleanXmlHandler( XMLReader anXmlReader, String aTag )
 	{
 		super(anXmlReader, aTag);
-		Trace.println(Trace.LEVEL.CONSTRUCTOR, "GenericTagAndBooleanXmlHandler( anXmlreader, " + aTag + " )", true);
+		Trace.println(Trace.CONSTRUCTOR, "GenericTagAndBooleanXmlHandler( anXmlreader, " + aTag + " )", true);
 	}
 
 	@Override

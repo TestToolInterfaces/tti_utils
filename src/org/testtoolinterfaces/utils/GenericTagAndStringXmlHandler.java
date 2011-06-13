@@ -21,7 +21,7 @@ public final class GenericTagAndStringXmlHandler extends XmlHandler
 	public GenericTagAndStringXmlHandler( XMLReader anXmlReader, String aTag )
 	{
 		super(anXmlReader, aTag);
-		Trace.println(Trace.LEVEL.CONSTRUCTOR, "GenericTagAndStringXmlHandler( anXmlreader, " + aTag + " )", true);
+		Trace.println(Trace.CONSTRUCTOR, "GenericTagAndStringXmlHandler( anXmlreader, " + aTag + " )", true);
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public final class GenericTagAndStringXmlHandler extends XmlHandler
 	@Override
 	public void handleCharacters(String aValue)
 	{
-		Trace.println(Trace.LEVEL.SUITE, "handleCharacters( " + aValue.trim() + " )", true);
+		Trace.println(Trace.SUITE, "handleCharacters( " + aValue.trim() + " )", true);
 		this.appendValue(aValue.trim());
 	}
 
