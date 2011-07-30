@@ -300,6 +300,23 @@ public class RunTimeDataTester
 	}
 
 	/**
+	 * Test method for {@link org.testtoolinterfaces.utils.RunTimeData#getValueAs( java.lang.Class<Type> )}.
+	 */
+	@Test
+	public void testGetValueAsDerivedObject()
+	{
+		RunTimeData rtData = new RunTimeData();
+
+		GenericTagAndBooleanXmlHandler handler = new GenericTagAndBooleanXmlHandler( null, "DummyTag" );
+		RunTimeVariable rtVar = new RunTimeVariable("testvar", handler);
+		rtData.add(rtVar);
+
+		XmlHandler variable = rtData.getValueAs( XmlHandler.class, "testvar" );
+		Assert.assertNotNull(variable);
+		Assert.assertEquals("Correct class", GenericTagAndBooleanXmlHandler.class, variable.getClass());
+	}
+
+	/**
 	 * Test method for {@link org.testtoolinterfaces.utils.RunTimeData#getType(java.lang.String)}.
 	 * 
 	 */

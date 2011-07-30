@@ -138,10 +138,11 @@ public class RunTimeData extends Hashtable<String, RunTimeVariable>
 		}
 
 		Object value = this.getValue(aName);
-		if ( value != null && this.getType( aName ).equals( aType ) )
+		if ( value != null && aType.isInstance(value) )
 		{
 			varOfType = (Type) value;
 		}
+
 		return varOfType;
 	}
 
