@@ -5,23 +5,47 @@ import org.xml.sax.XMLReader;
 
 
 /**
- * @author Arjan Kranenburg 
- * 
- *  <Tag>
+ * Handles XML lines like:
+ *  <{tag}>
  *    ...
- *  </Tag>
+ *  </{tag}>
  * 
  * The Tag-name is configurable and the Text is read and returned as string.
  * 
  * No parameters and no sub-tags are supported.
  * If parameters and/or sub-tags are needed, a specefic XmlHandler must be created.
+ * 
+ * @author Arjan Kranenburg 
+ * 
  */
-public final class GenericTagAndStringXmlHandler extends XmlHandler
+public class GenericTagAndStringXmlHandler extends XmlHandler
 {
-	public GenericTagAndStringXmlHandler( XMLReader anXmlReader, String aTag )
+	boolean myPreserveWhites;
+	
+	/**
+	 * Constructor
+	 * 
+	 * @param anXmlReader		The XMLReader
+	 * @param aTag				The XML-element name
+	 * @param aPreserveWhites	Flag to indicate if white-spaces must be reserved (default false)
+	 */
+	public GenericTagAndStringXmlHandler( XMLReader anXmlReader, String aTag, boolean aPreserveWhites )
 	{
 		super(anXmlReader, aTag);
 		Trace.println(Trace.CONSTRUCTOR, "GenericTagAndStringXmlHandler( anXmlreader, " + aTag + " )", true);
+		
+		myPreserveWhites = aPreserveWhites;
+	}
+
+	/**
+	 * Constructor
+	 * 
+	 * @param anXmlReader	The XMLReader
+	 * @param aTag			The XML-element name
+	 */
+	public GenericTagAndStringXmlHandler( XMLReader anXmlReader, String aTag )
+	{
+		this( anXmlReader, aTag, false );
 	}
 
 	@Override
@@ -33,10 +57,14 @@ public final class GenericTagAndStringXmlHandler extends XmlHandler
 	@Override
 	public void handleCharacters(String aValue)
 	{
-		Trace.println(Trace.SUITE, "handleCharacters( " + aValue.trim() + " )", true);
-		this.appendValue(aValue.trim());
+		Trace.println(Trace.SUITE, "handleCharacters( " + aValue + " )", true);
+		String value = aValue;
+		if ( ! myPreserveWhites )
+		{
+			value = removeExtraWhites( aValue );
+		}
+		this.appendValue( value );
 	}
-
 
 	@Override
 	public void handleEndElement(String aQualifiedName)
@@ -60,5 +88,26 @@ public final class GenericTagAndStringXmlHandler extends XmlHandler
 	public void handleReturnFromChildElement(String aQualifiedName, XmlHandler aChildXmlHandler)
 	{
 		//nop
+	}
+	
+	@Override
+	public String getValue()
+	{
+		Trace.println(Trace.GETTER);
+		String value = super.getValue();
+		if ( ! myPreserveWhites )
+		{
+			value = value.trim();
+		}
+		
+		return value;
+	}
+
+	protected String removeExtraWhites( String aString )
+	{
+		String string_trimmed = aString.replaceAll("\n", " ");
+		string_trimmed = string_trimmed.replaceAll("\t", " ");
+		string_trimmed = string_trimmed.replaceAll(" +", " ");
+		return string_trimmed;
 	}
 }

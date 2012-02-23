@@ -3,7 +3,6 @@
  */
 package org.testtoolinterfaces.utils;
 
-import java.util.Enumeration;
 import java.util.Hashtable;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -23,15 +22,60 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public abstract class XmlHandler extends DefaultHandler
 {
+	/**
+     * Called when a start element must be handled. 
+     * @note processElementAttributes() and handleStartElement of child element is already called.
+     * 
+	 * @param aQualifiedName	The element name
+	 * @throws TTIException
+	 */
+	public abstract void handleStartElement( String aQualifiedName ) throws TTIException;
+	
+    /**
+     * Called to process all the attributes of an element
+     * 
+     * @param aQualifiedName	The element name
+     * @param anAtt				A list of attributes
+     * @throws TTIException
+     */
+    public abstract void processElementAttributes( String aQualifiedName, Attributes anAtt ) throws TTIException;
+
+    /**
+     * Called just before a child element is handled
+     * 
+     * @param aQualifiedName	the name of the child element
+     * @throws TTIException
+     */
+    public abstract void handleGoToChildElement( String aQualifiedName ) throws TTIException;
+
+    /**
+     * Called to handle the characters, i.e the value of a simple element
+     * 
+     * @param aValue			The value of a simple element
+     * @throws TTIException
+     */
+    public abstract void handleCharacters( String aValue ) throws TTIException;
+
+    /**
+     * Called to handle the end element
+     * 
+     * @param aQualifiedName	The name of the element
+     * @throws TTIException
+     */
+    public abstract void handleEndElement( String aQualifiedName ) throws TTIException;
+
+    /**
+     * Called right after a child element is handled
+     * 
+     * @param aQualifiedName	the name of the child element
+     * @param aChildXmlHandler	the child XmlHandler
+     * @throws TTIException
+     */
+    public abstract void handleReturnFromChildElement( String aQualifiedName, XmlHandler aChildXmlHandler ) throws TTIException;
+
 	private String myStartElement = "";
 	private String myValue = "";
-
-	public abstract void handleStartElement( String aQualifiedName ) throws TTIException; 
-    public abstract void processElementAttributes( String qualifiedName, Attributes att ) throws TTIException;
-    public abstract void handleGoToChildElement( String aQualifiedName ) throws TTIException;
-    public abstract void handleCharacters( String aValue ) throws TTIException; 
-    public abstract void handleEndElement( String aQualifiedName ) throws TTIException;
-    public abstract void handleReturnFromChildElement( String aQualifiedName, XmlHandler aChildXmlHandler ) throws TTIException;
+	private boolean isStartElementHandled = false;
 
 	private Hashtable<String, XmlHandler> myStartElementHandlers;
     private Hashtable<String, XmlHandler> myEndElementHandlers;
@@ -86,7 +130,7 @@ public abstract class XmlHandler extends DefaultHandler
 	{
 		Trace.println(Trace.UTIL, "addStartElementHandler( " + aHandler.toString() + " )", true);
 
-    	myStartElementHandlers.put( anElement, aHandler );
+    	myStartElementHandlers.put( anElement.toLowerCase(), aHandler );
 	}
 	
 	/**
@@ -98,7 +142,7 @@ public abstract class XmlHandler extends DefaultHandler
 	{
 		Trace.println(Trace.UTIL, "removeStartElementHandler( " + anElement + " )", true);
 
-    	myStartElementHandlers.remove( anElement );
+    	myStartElementHandlers.remove( anElement.toLowerCase() );
 	}
 	
 	/**
@@ -112,7 +156,7 @@ public abstract class XmlHandler extends DefaultHandler
 	{
 		Trace.println(Trace.UTIL, "addEndElementHandler( " + aHandler.toString() + " )", true);
 
-    	myEndElementHandlers.put( anElement, aHandler );
+    	myEndElementHandlers.put( anElement.toLowerCase(), aHandler );
 	}
 	
 	/**
@@ -124,39 +168,51 @@ public abstract class XmlHandler extends DefaultHandler
 	{
 		Trace.println(Trace.UTIL, "removeEndElementHandler( " + anElement + " )", true);
 
-    	myEndElementHandlers.remove( anElement );
+    	myEndElementHandlers.remove( anElement.toLowerCase() );
 	}
 	
-    // SAX calls this method when it encounters an element
-	/* (non-Javadoc)
-	 * @see org.xml.sax.helpers.DefaultHandler#startElement(java.lang.String, java.lang.String, java.lang.String, org.xml.sax.Attributes)
-	 */
-	final public void startElement(String aNamespaceURI, String aLocalName,
-			String aQualifiedName, Attributes anAtt) throws SAXException
+    // SAX calls this method when it encounters an element. This can be the "own" element or a child element
+	@Override
+	final public void startElement( String aNamespaceURI,
+	                                String aLocalName,
+	                                String aQualifiedName,
+	                                Attributes anAtt) throws SAXException
 	{
 		Trace.println(Trace.UTIL, "startElement( " + aQualifiedName + " )", true);
 
+		if( ! this.myStartElement.equalsIgnoreCase(aQualifiedName))
+		{
+			return;
+		}
+
 		try
 		{
-			this.handleGoToChildElement(aQualifiedName);
-
-			XmlHandler aHandler = this;
-			for (Enumeration<String> keys = myStartElementHandlers.keys(); keys.hasMoreElements();)
+			if ( ! isStartElementHandled )
 			{
-				String key = keys.nextElement();
-				if (aQualifiedName.equalsIgnoreCase(key))
+				this.handleStartElement( aQualifiedName );
+				if (anAtt.getLength() != 0)
 				{
-					aHandler = myStartElementHandlers.get(key);
+					this.processElementAttributes(aQualifiedName, anAtt);
 				}
+				
+				isStartElementHandled = true;
 			}
-	
-			myXmlReader.setContentHandler(aHandler);
-			aHandler.setDocumentLocator(this.getLocator());
-			aHandler.handleStartElement(aQualifiedName);
-	
-			if (anAtt.getLength() != 0)
+			else
 			{
-				aHandler.processElementAttributes(aQualifiedName, anAtt);
+				this.handleGoToChildElement(aQualifiedName);
+
+				if ( myStartElementHandlers.containsKey(aQualifiedName.toLowerCase()) )
+				{
+					XmlHandler childHandler = myStartElementHandlers.get(aQualifiedName.toLowerCase());
+					myXmlReader.setContentHandler(childHandler);
+					childHandler.setDocumentLocator(this.getLocator());
+					
+					childHandler.startElement(aNamespaceURI, aLocalName, aQualifiedName, anAtt);
+				}
+				else
+				{
+					throw new SAXException( "No child XmlHandler defined for " + aQualifiedName );
+				}
 			}
 		}
 		catch (TTIException e)
@@ -165,58 +221,55 @@ public abstract class XmlHandler extends DefaultHandler
 		}
 	}
 
-    // SAX calls this method to pass in character data
-    /* (non-Javadoc)
-     * @see org.xml.sax.helpers.DefaultHandler#characters(char[], int, int)
-     */
+    // SAX calls this method to handle the character data
+	@Override
     final public void characters(char ch[], int start, int length)
             throws SAXException
     {
 		Trace.println(Trace.UTIL);
 
-    	String aValue = new String(ch, start, length);
-    	try
+		if ( isStartElementHandled )
 		{
-			this.handleCharacters(aValue);
-		}
-		catch (TTIException e)
-		{
-			throw new SAXException( e );
+	    	String aValue = new String(ch, start, length);
+	    	try
+			{
+				this.handleCharacters(aValue);
+			}
+			catch (TTIException e)
+			{
+				throw new SAXException( e );
+			}			
 		}
     }
     
     // SAX call this method when it encounters an end tag
-    /* (non-Javadoc)
-     * @see org.xml.sax.helpers.DefaultHandler#endElement(java.lang.String, java.lang.String, java.lang.String)
-     */
-    final public void endElement(String aNamespaceURI,
-                           String aLocalName,
-                           String aQualifiedName)
+	@Override
+    final public void endElement( String aNamespaceURI,
+                                  String aLocalName,
+                                  String aQualifiedName )
             throws SAXException
     {
 		Trace.println(Trace.UTIL, "endElement( " + aQualifiedName + " )", true);
     	
+		isStartElementHandled = false;
     	try
 		{
 			this.handleEndElement(aQualifiedName);
 
-	    	if (!myEndElementHandlers.isEmpty())
-		    {
-			    for (Enumeration<String> keys = myEndElementHandlers.keys(); keys.hasMoreElements();)
-			    {
-			    	String key = keys.nextElement();
-			    	if (aQualifiedName.equalsIgnoreCase(key))
-			    	{
-			            myXmlReader.setContentHandler(myEndElementHandlers.get(key));
-			            myEndElementHandlers.get(key).handleReturnFromChildElement(aQualifiedName, this);
-			    	}
-			    }
+	    	String key = aQualifiedName.toLowerCase();
+			if ( myEndElementHandlers.containsKey( key ) )
+			{
+				XmlHandler parentHandler = myEndElementHandlers.get( key );
+
+				myXmlReader.setContentHandler( parentHandler );
+				parentHandler.handleReturnFromChildElement(aQualifiedName, this);
 		    }
 		}
 		catch (TTIException e)
 		{
 			throw new SAXException( e );
 		}
+		
     }
     
 	/**
@@ -275,10 +328,8 @@ public abstract class XmlHandler extends DefaultHandler
 		Trace.println(Trace.UTIL);
 		myValue = "";
 	}
-	
-    /* (non-Javadoc)
-     * @see org.xml.sax.helpers.DefaultHandler#setDocumentLocator(org.xml.sax.Locator)
-     */
+
+	@Override
     public void setDocumentLocator(Locator aLocator)
     {
         myLocator = aLocator;

@@ -1,16 +1,15 @@
 package org.testtoolinterfaces.utils;
 
-import org.xml.sax.Attributes;
 import org.xml.sax.XMLReader;
 
 /**
  * Handles XML lines like:
- *  <Tag>true|false</Tag>
+ *  <{tag}>true|false</{tag}>
  * 
  * @author Arjan Kranenburg 
  * 
  */
-public final class GenericTagAndBooleanXmlHandler extends XmlHandler
+public final class GenericTagAndBooleanXmlHandler extends GenericTagAndStringXmlHandler
 {
 	public GenericTagAndBooleanXmlHandler( XMLReader anXmlReader, String aTag )
 	{
@@ -18,47 +17,12 @@ public final class GenericTagAndBooleanXmlHandler extends XmlHandler
 		Trace.println(Trace.CONSTRUCTOR, "GenericTagAndBooleanXmlHandler( anXmlreader, " + aTag + " )", true);
 	}
 
-	@Override
-	public void handleStartElement(String aQualifiedName)
+	/**
+	 * @return 	The boolean meaning of the value in the XML field, i.e. if
+	 * 			the xml field was equal to "true", ignoring case and whitespaces.
+	 */
+	public boolean getBoolean()
 	{
-   		//nop;
-    }
-
-	@Override
-	public void handleCharacters(String aValue)
-	{
-		if ( aValue.equalsIgnoreCase("true") || aValue.equalsIgnoreCase("false"))
-		{
-			this.setValue(aValue.toLowerCase());
-		}
-		else
-		{
-			Warning.println("Wrong value for " + this.getStartElement() + ": " + aValue);
-			Warning.println("Allowed values are: true, false");
-		}
-    }
-    
-	@Override
-	public void handleEndElement(String aQualifiedName)
-	{
-		//nop
-    }
-
-	@Override
-    public void processElementAttributes(String aQualifiedName, Attributes att)
-    {
-		//nop. Attributes will be ignored.
-    }
-
-	@Override
-	public void handleGoToChildElement(String aQualifiedName)
-	{
-		//nop
-	}
-
-	@Override
-	public void handleReturnFromChildElement(String aQualifiedName, XmlHandler aChildXmlHandler)
-	{
-		//nop
+			return Boolean.parseBoolean(getValue());
 	}
 }
