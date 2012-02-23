@@ -21,6 +21,7 @@ import org.xml.sax.XMLReader;
 public class GenericTagAndStringXmlHandler extends XmlHandler
 {
 	boolean myPreserveWhites;
+	private String myValue = "";
 	
 	/**
 	 * Constructor
@@ -49,13 +50,13 @@ public class GenericTagAndStringXmlHandler extends XmlHandler
 	}
 
 	@Override
-	public void handleStartElement(String aQualifiedName)
+	public void handleStartElement(String aQualifiedName) throws TTIException
 	{
    		//nop;
     }
 
 	@Override
-	public void handleCharacters(String aValue)
+	public void handleCharacters(String aValue) throws TTIException
 	{
 		Trace.println(Trace.SUITE, "handleCharacters( " + aValue + " )", true);
 		String value = aValue;
@@ -63,38 +64,40 @@ public class GenericTagAndStringXmlHandler extends XmlHandler
 		{
 			value = removeExtraWhites( aValue );
 		}
-		this.appendValue( value );
+		myValue += value;
 	}
 
 	@Override
-	public void handleEndElement(String aQualifiedName)
+	public void handleEndElement(String aQualifiedName) throws TTIException
 	{
 		//nop
     }
 
 	@Override
-    public void processElementAttributes(String aQualifiedName, Attributes att)
+    public void processElementAttributes(String aQualifiedName, Attributes att) throws TTIException
     {
 		//nop. Attributes will be ignored.
     }
 
 	@Override
-	public void handleGoToChildElement(String aQualifiedName)
+	public void handleGoToChildElement(String aQualifiedName) throws TTIException
 	{
 		//nop
 	}
 
 	@Override
-	public void handleReturnFromChildElement(String aQualifiedName, XmlHandler aChildXmlHandler)
+	public void handleReturnFromChildElement(String aQualifiedName, XmlHandler aChildXmlHandler) throws TTIException
 	{
 		//nop
 	}
 	
-	@Override
+	/**
+	 * @return the value read by this handler
+	 */
 	public String getValue()
 	{
 		Trace.println(Trace.GETTER);
-		String value = super.getValue();
+		String value = myValue;
 		if ( ! myPreserveWhites )
 		{
 			value = value.trim();
@@ -109,5 +112,11 @@ public class GenericTagAndStringXmlHandler extends XmlHandler
 		string_trimmed = string_trimmed.replaceAll("\t", " ");
 		string_trimmed = string_trimmed.replaceAll(" +", " ");
 		return string_trimmed;
+	}
+	
+	@Override
+	public String toString()
+	{
+		return getStartElement() + (this.myValue == "" ? "" : "=" + this.myValue);		
 	}
 }

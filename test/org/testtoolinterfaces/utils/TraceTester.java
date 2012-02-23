@@ -12,6 +12,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.testtoolinterfaces.utils.Trace;
+import org.testtoolinterfaces.utils.helper.TraceTesterHelper;
 
 /**
  * @author Arjan Kranenburg

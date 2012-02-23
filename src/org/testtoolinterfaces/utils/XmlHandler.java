@@ -74,11 +74,11 @@ public abstract class XmlHandler extends DefaultHandler
     public abstract void handleReturnFromChildElement( String aQualifiedName, XmlHandler aChildXmlHandler ) throws TTIException;
 
 	private String myStartElement = "";
-	private String myValue = "";
+//	private String myValue = "";
 	private boolean isStartElementHandled = false;
 
-	private Hashtable<String, XmlHandler> myStartElementHandlers;
-    private Hashtable<String, XmlHandler> myEndElementHandlers;
+	private Hashtable<String, XmlHandler> myChildElementHandlers;
+    private XmlHandler myParentElementHandler = null;
 	private XMLReader myXmlReader;
 	
 	private Locator myLocator;
@@ -91,8 +91,7 @@ public abstract class XmlHandler extends DefaultHandler
 	{
 		Trace.println(Trace.CONSTRUCTOR);
 
-    	myStartElementHandlers = new Hashtable<String, XmlHandler>();
-		myEndElementHandlers = new Hashtable<String, XmlHandler>();
+    	myChildElementHandlers = new Hashtable<String, XmlHandler>();
         myXmlReader = anXmlReader;
 
 		myStartElement = aTag;
@@ -113,8 +112,7 @@ public abstract class XmlHandler extends DefaultHandler
 		SAXParser saxParser = spf.newSAXParser();
 		myXmlReader = saxParser.getXMLReader();
 
-    	myStartElementHandlers = new Hashtable<String, XmlHandler>();
-		myEndElementHandlers = new Hashtable<String, XmlHandler>();
+    	myChildElementHandlers = new Hashtable<String, XmlHandler>();
 
 		myStartElement = aTag;
 	}
@@ -126,49 +124,36 @@ public abstract class XmlHandler extends DefaultHandler
 	 *  @param anElement   Specifies the start tag
 	 *  @param aHandler	   The XML Handler that must handle all data after and including the start tag.
 	 */
-	public void addStartElementHandler( String anElement, XmlHandler aHandler )
+	public void addElementHandler( String anElement, XmlHandler aHandler )
 	{
-		Trace.println(Trace.UTIL, "addStartElementHandler( " + aHandler.toString() + " )", true);
+		Trace.println(Trace.UTIL, "addElementHandler( " + aHandler.toString() + " )", true);
 
-    	myStartElementHandlers.put( anElement.toLowerCase(), aHandler );
+    	myChildElementHandlers.put( anElement.toLowerCase(), aHandler );
+    	aHandler.setParentElementHandler(this);
 	}
 	
 	/**
 	 * Removes an element handler for a specified start tag
 	 * 
-	 * @param anElement Sppecifies the start tag
+	 * @param anElement Specifies the start tag
 	 */
-	public void removeStartElementHandler( String anElement )
+	public void removeElementHandler( String anElement )
 	{
 		Trace.println(Trace.UTIL, "removeStartElementHandler( " + anElement + " )", true);
 
-    	myStartElementHandlers.remove( anElement.toLowerCase() );
+    	myChildElementHandlers.remove( anElement.toLowerCase() );
 	}
 	
 	/**
-	 *  Adds an Element Handler for the specified end tag
+	 *  Sets the Element Handler when the end-tag is reached
 	 *  
-	 *  @param anElement   Specifies the end tag
 	 *  @param aHandler	   The XML Handler that must handle all data after the end tag.
 	 *                     In general that will be the parent Handler, but could in theory be a different Handler.
 	 */
-	public void addEndElementHandler( String anElement, XmlHandler aHandler )
+	public void setParentElementHandler( XmlHandler aHandler )
 	{
-		Trace.println(Trace.UTIL, "addEndElementHandler( " + aHandler.toString() + " )", true);
-
-    	myEndElementHandlers.put( anElement.toLowerCase(), aHandler );
-	}
-	
-	/**
-	 * Removes an Element Handler for the specified end tag
-	 * 
-	 * @param anElement Specifies the end tag
-	 */
-	public void removeEndElementHandler( String anElement )
-	{
-		Trace.println(Trace.UTIL, "removeEndElementHandler( " + anElement + " )", true);
-
-    	myEndElementHandlers.remove( anElement.toLowerCase() );
+		Trace.println(Trace.UTIL, "setParentElementHandler( " + aHandler.toString() + " )", true);
+		myParentElementHandler = aHandler;
 	}
 	
     // SAX calls this method when it encounters an element. This can be the "own" element or a child element
@@ -180,14 +165,10 @@ public abstract class XmlHandler extends DefaultHandler
 	{
 		Trace.println(Trace.UTIL, "startElement( " + aQualifiedName + " )", true);
 
-		if( ! this.myStartElement.equalsIgnoreCase(aQualifiedName))
-		{
-			return;
-		}
-
 		try
 		{
-			if ( ! isStartElementHandled )
+			if ( this.myStartElement.equalsIgnoreCase(aQualifiedName)
+				 && ! isStartElementHandled )
 			{
 				this.handleStartElement( aQualifiedName );
 				if (anAtt.getLength() != 0)
@@ -201,9 +182,9 @@ public abstract class XmlHandler extends DefaultHandler
 			{
 				this.handleGoToChildElement(aQualifiedName);
 
-				if ( myStartElementHandlers.containsKey(aQualifiedName.toLowerCase()) )
+				if ( myChildElementHandlers.containsKey(aQualifiedName.toLowerCase()) )
 				{
-					XmlHandler childHandler = myStartElementHandlers.get(aQualifiedName.toLowerCase());
+					XmlHandler childHandler = myChildElementHandlers.get(aQualifiedName.toLowerCase());
 					myXmlReader.setContentHandler(childHandler);
 					childHandler.setDocumentLocator(this.getLocator());
 					
@@ -211,7 +192,7 @@ public abstract class XmlHandler extends DefaultHandler
 				}
 				else
 				{
-					throw new SAXException( "No child XmlHandler defined for " + aQualifiedName );
+					throw new SAXException( "No (child) XmlHandler defined for " + aQualifiedName );
 				}
 			}
 		}
@@ -256,14 +237,11 @@ public abstract class XmlHandler extends DefaultHandler
 		{
 			this.handleEndElement(aQualifiedName);
 
-	    	String key = aQualifiedName.toLowerCase();
-			if ( myEndElementHandlers.containsKey( key ) )
+			if( myParentElementHandler != null )
 			{
-				XmlHandler parentHandler = myEndElementHandlers.get( key );
-
-				myXmlReader.setContentHandler( parentHandler );
-				parentHandler.handleReturnFromChildElement(aQualifiedName, this);
-		    }
+				myXmlReader.setContentHandler( myParentElementHandler );
+				myParentElementHandler.handleReturnFromChildElement(aQualifiedName, this);
+			}
 		}
 		catch (TTIException e)
 		{
@@ -289,36 +267,36 @@ public abstract class XmlHandler extends DefaultHandler
 		return myStartElement;
 	}
 	
-	/**
-	 * @return the value read by this handler
-	 */
-	public String getValue()
-	{
-		Trace.println(Trace.GETTER);
-		return myValue;
-	}
-
-	/**
-	 * Sets the string value for this handler
-	 * 
-	 * @param aValue
-	 */
-	protected void setValue( String aValue )
-	{
-		Trace.println(Trace.SETTER, "setValue( " + aValue + " )", true);
-		myValue = aValue;
-	}
-	
-	/**
-	 * Appends the string value for this handler to the current value
-	 * 
-	 * @param aValue
-	 */
-	protected void appendValue( String aValue )
-	{
-		Trace.println(Trace.UTIL, "appendValue( " + aValue + " )", true);
-		myValue += aValue;
-	}
+//	/**
+//	 * @return the value read by this handler
+//	 */
+//	public String getValue()
+//	{
+//		Trace.println(Trace.GETTER);
+//		return myValue;
+//	}
+//
+//	/**
+//	 * Sets the string value for this handler
+//	 * 
+//	 * @param aValue
+//	 */
+//	protected void setValue( String aValue )
+//	{
+//		Trace.println(Trace.SETTER, "setValue( " + aValue + " )", true);
+//		myValue = aValue;
+//	}
+//	
+//	/**
+//	 * Appends the string value for this handler to the current value
+//	 * 
+//	 * @param aValue
+//	 */
+//	protected void appendValue( String aValue )
+//	{
+//		Trace.println(Trace.UTIL, "appendValue( " + aValue + " )", true);
+//		myValue += aValue;
+//	}
 
 	/**
 	 * Resets the value read by this handler to the empty string
@@ -326,7 +304,7 @@ public abstract class XmlHandler extends DefaultHandler
 	public void reset( )
 	{
 		Trace.println(Trace.UTIL);
-		myValue = "";
+//		myValue = "";
 	}
 
 	@Override
@@ -343,11 +321,9 @@ public abstract class XmlHandler extends DefaultHandler
     	return myLocator;
     }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
+    @Override
 	public String toString()
 	{
-		return this.myStartElement + (this.myValue == "" ? "" : "=" + this.myValue);		
+		return this.myStartElement;
 	}
 }

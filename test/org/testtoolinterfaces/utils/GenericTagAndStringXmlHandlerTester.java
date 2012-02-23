@@ -64,7 +64,27 @@ public class GenericTagAndStringXmlHandlerTester extends TestCase
 	 */
 	public void testCase_readString_wrongTag()
 	{
-		parseFile("string_wrongTag.xml", myHandler_removeWhites);
+		File testXmlFilesDir = new File ( "test" + File.separator +
+		                                  "org" + File.separator +
+		                                  "testtoolinterfaces" + File.separator +
+		                                  "utils" + File.separator +
+		                                  "testXmlFiles" );
+
+		File xmlTestFile = new File ( testXmlFilesDir, "string_wrongTag.xml");
+
+		// parse the document
+		try
+		{
+			myXmlReader.setContentHandler(myHandler_removeWhites);
+			myXmlReader.parse(xmlTestFile.getAbsolutePath());
+			fail( "No Exception thrown" );
+		}
+		catch (Exception e)
+		{
+			Assert.assertEquals( "Incorrect exception",
+			                     "No (child) XmlHandler defined for wrong",
+			                     e.getMessage() );
+		}
 		Assert.assertEquals("Incorrect value", "", myHandler_removeWhites.getValue());
 
 		myHandler_removeWhites.reset();
