@@ -115,6 +115,13 @@ public class GenericTagAndStringXmlHandler extends XmlHandler
 	}
 	
 	@Override
+	public void reset( )
+	{
+		Trace.println(Trace.UTIL);
+		myValue = "";
+	}
+
+	@Override
 	public String toString()
 	{
 		return getStartElement() + (this.myValue == "" ? "" : "=" + this.myValue);		

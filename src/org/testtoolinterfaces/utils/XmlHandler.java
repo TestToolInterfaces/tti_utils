@@ -304,7 +304,7 @@ public abstract class XmlHandler extends DefaultHandler
 	public void reset( )
 	{
 		Trace.println(Trace.UTIL);
-//		myValue = "";
+		// Nop
 	}
 
 	@Override

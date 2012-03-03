@@ -57,6 +57,9 @@ public class GenericTagAndStringXmlHandlerTester extends TestCase
 		Assert.assertEquals("Incorrect value", "value", myHandler_removeWhites.getValue());
 
 		myHandler_removeWhites.reset();
+
+		parseFile("string_inline.xml", myHandler_removeWhites);
+		Assert.assertEquals("Incorrect value", "value", myHandler_removeWhites.getValue());
 	}
 		
 	/**
