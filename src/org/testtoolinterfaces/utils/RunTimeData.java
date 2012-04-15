@@ -183,6 +183,11 @@ public class RunTimeData extends Hashtable<String, RunTimeVariable>
 	    		System.out.println( "null" );
 	    	}
 	    }
+	    
+	    if ( myParentScope != null )
+	    {
+	    	myParentScope.print();
+	    }
 	}
 
 	/**

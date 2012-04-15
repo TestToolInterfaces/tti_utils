@@ -4,7 +4,7 @@
 	<target name="CreateJarFile">
 
 		<delete file="../Utils.jar"/>
-		<property name="version.num" value="0.1.0"/>
+		<property name="version.num" value="0.1.1"/>
 	    <buildnumber file="build.num"/>
 		<jar destfile="../Utils.jar">
 			<zipfileset dir="bin" prefix="" />

@@ -119,6 +119,20 @@ public abstract class XmlHandler extends DefaultHandler
 
 
 	/**
+	 *  Adds an Element Handler
+	 *  
+	 *  @param aHandler	   The XML Handler that must handle all data after and including the start tag.
+	 */
+	public void addElementHandler( XmlHandler aHandler )
+	{
+		Trace.println(Trace.UTIL, "addElementHandler( " + aHandler.toString() + " )", true);
+
+    	myChildElementHandlers.put( aHandler.getStartElement().toLowerCase(), aHandler );
+    	aHandler.setParentElementHandler(this);
+	}
+	
+	@Deprecated
+	/**
 	 *  Adds an Element Handler for the specified start tag
 	 *  
 	 *  @param anElement   Specifies the start tag
