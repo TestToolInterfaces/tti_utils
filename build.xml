@@ -1,25 +1,66 @@
 <?xml version="1.0"?>
  
-<project name="Utils" default="CreateJarFile">
-	<target name="CreateJarFile">
+<project name="testtoolinterfaces-utils" basedir="." default="all">
+    <property name="src.dir"       value="src"/>
+    <property name="build.dir"     value="build"/>
+    <property name="classes.dir"   value="bin"/>
+    <property name="jar.dir"       value="${build.dir}/jar"/>
 
-		<delete file="../Utils.jar"/>
-		<property name="version.num" value="0.1.1"/>
+	<property name="version.num"   value="0.1.2"/>
+	<property name="manifest.file" value="${build.dir}/MANIFEST.MF"/>
+	<property name="build.compiler.warnings" value="true"/>
+
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+        <delete dir="${classes.dir}"/>
+    </target>
+
+    <target name="compile">
+        <mkdir dir="${classes.dir}"/>
+        <javac srcdir="${src.dir}" destdir="${classes.dir}" compiler="javac1.5"/>
 	    <buildnumber file="build.num"/>
-		<jar destfile="../Utils.jar">
-			<zipfileset dir="bin" prefix="" />
-			<zipfileset dir="src" prefix="" />
+    </target>
 
-			<manifest>
-		        <attribute name="Created-By" value="TestToolInterfaces.org"/>
-		        <attribute name="Built-By" value="${user.name}"/>
-		        <attribute name="Implementation-Title" value="Test Tool Interfaces Utilities" />
-		        <attribute name="Implementation-Version" value="${version.num}.${build.number}"/> 
-		        <attribute name="Implementation-Vendor" value="Open Source - Arjan Kranenburg" />
-		        <attribute name="Specification-Title" value="Test Tool Interfaces Utilities" />
-		        <attribute name="Specification-Version" value="0.1" />
-		        <attribute name="Specification-Vendor" value="TestToolInterfaces.org" />
-		    </manifest>
-		</jar>
-	</target>
+    <target name="manifest">
+        <mkdir dir="${build.dir}"/>
+		<manifest file="${manifest.file}">
+	        <attribute name="Created-By" value="TestToolInterfaces.org"/>
+	        <attribute name="Built-By" value="${user.name}"/>
+	        <attribute name="Implementation-Title" value="Test Tool Interfaces Utilities" />
+	        <attribute name="Implementation-Version" value="${version.num}.${build.number}"/> 
+	        <attribute name="Implementation-Vendor" value="Open Source - Arjan Kranenburg" />
+	        <attribute name="Specification-Title" value="Test Tool Interfaces Utilities" />
+	        <attribute name="Specification-Version" value="0.1" />
+	        <attribute name="Specification-Vendor" value="TestToolInterfaces.org" />
+	    </manifest>
+    </target>
+
+    <target name="package-jar">
+        <mkdir dir="${jar.dir}"/>
+        <jar destfile="${jar.dir}/${ant.project.name}-${version.num}.jar"
+        	 basedir="${classes.dir}"
+        	 manifest="${manifest.file}">
+			<fileset dir=".">
+			    <include name="License_lgpl-3.0.txt"/>
+			</fileset>
+        </jar>
+    </target>
+
+    <target name="package-jar-src">
+        <mkdir dir="${jar.dir}"/>
+        <jar destfile="${jar.dir}/${ant.project.name}-${version.num}-src.jar"
+        	 basedir="${classes.dir}"
+        	 manifest="${manifest.file}">
+			<zipfileset dir="src" prefix="" />
+			<fileset dir=".">
+			    <include name="License_lgpl-3.0.txt"/>
+			</fileset>
+        </jar>
+    </target>
+
+	<target name="jar" depends="compile,manifest,package-jar"/>
+
+	<target name="jar-src" depends="compile,manifest,package-jar-src"/>
+
+	<target name="all" depends="clean,compile,manifest,package-jar,package-jar-src"/>
 </project>

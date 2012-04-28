@@ -1,6 +1,7 @@
 package org.testtoolinterfaces.utils;
 
 import java.io.File;
+import java.lang.reflect.Proxy;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -147,6 +148,14 @@ public class RunTimeData extends Hashtable<String, RunTimeVariable>
 	}
 
 	/**
+	 * @return the parentScope
+	 */
+	public RunTimeData getParentScope()
+	{
+		return myParentScope;
+	}
+
+	/**
 	 * Adds the variable to the RunTimeData.
 	 * 
 	 * Overwrites the variable if a variable with the same name already exists.
@@ -165,27 +174,26 @@ public class RunTimeData extends Hashtable<String, RunTimeVariable>
 	    {
 	    	String key = keys.nextElement();
 	    	RunTimeVariable rtVar = this.get(key);
-	    	if ( rtVar == null )
-	    	{
+	    	if ( rtVar == null ) {
 	    		// This is only possible when rtData.put( key, null ) was used in stead of rtData.add( aVariable )
 	    		throw new NullPointerException( "null-object added to RuntimeData" );
 	    	}
 
-	    	System.out.print( key + " -> ("
-					+ rtVar.getType().getCanonicalName() + ") " );
-	    	Object value = rtVar.getValue();
-	    	if ( value != null )
-	    	{
-	    		System.out.println( value.toString() );
-	    	}
-	    	else
-	    	{
-	    		System.out.println( "null" );
+	    	Class<?> type = rtVar.getType();
+	    	if ( type.equals(Proxy.class) ) {
+		    	System.out.print( key + " -> Proxied" );
+	    	} else {
+		    	System.out.print( key + " -> (" + rtVar.getType().getCanonicalName() + ") " );
+		    	Object value = rtVar.getValue();
+		    	if ( value != null ) {
+		    		System.out.println( value.toString() );
+		    	} else {
+		    		System.out.println( "null" );
+		    	}
 	    	}
 	    }
 	    
-	    if ( myParentScope != null )
-	    {
+	    if ( myParentScope != null ) {
 	    	myParentScope.print();
 	    }
 	}
