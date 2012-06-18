@@ -22,6 +22,19 @@ public class RunTimeData extends Hashtable<String, RunTimeVariable>
 		myParentScope = null;
 	}
 
+	public boolean containsKey( String aName )
+	{
+		if ( super.containsKey( aName ) ) { return true; }
+		
+		if ( myParentScope != null )
+		{
+			return myParentScope.containsKey(aName);
+		}
+		
+		return false;
+	}
+
+
 	public RunTimeVariable get( String aName )
 	{
 		RunTimeVariable var = super.get( aName );
@@ -129,17 +142,18 @@ public class RunTimeData extends Hashtable<String, RunTimeVariable>
 	public <Type> Type getValueAs(Class<Type> aType, String aName)
 	{
 		Type varOfType = null;
-		if ( aType == Boolean.class )
+		if ( Boolean.class.isAssignableFrom(aType) )
 		{
 			varOfType = (Type) Boolean.FALSE;
 		} 
-		else if ( aType == Integer.class )
+		else if ( Integer.class.isAssignableFrom(aType) )
 		{
 			varOfType = (Type) new Integer( 0 );
 		}
 
 		Object value = this.getValue(aName);
-		if ( value != null && aType.isInstance(value) )
+		if ( value != null &&
+				( aType.isAssignableFrom(value.getClass()) || Proxy.isProxyClass(value.getClass()) ) )
 		{
 			varOfType = (Type) value;
 		}
@@ -180,7 +194,7 @@ public class RunTimeData extends Hashtable<String, RunTimeVariable>
 	    	}
 
 	    	Class<?> type = rtVar.getType();
-	    	if ( type.equals(Proxy.class) ) {
+	    	if ( Proxy.isProxyClass(type) ) {
 		    	System.out.print( key + " -> Proxied" );
 	    	} else {
 		    	System.out.print( key + " -> (" + rtVar.getType().getCanonicalName() + ") " );
