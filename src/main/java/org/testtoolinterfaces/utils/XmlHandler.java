@@ -259,9 +259,9 @@ public abstract class XmlHandler extends DefaultHandler
 		}
 		catch (TTIException e)
 		{
+			System.out.println(e.getMessage());
 			throw new SAXException( e );
 		}
-		
     }
     
 	/**
