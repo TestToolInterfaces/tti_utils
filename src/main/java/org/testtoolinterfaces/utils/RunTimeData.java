@@ -134,9 +134,10 @@ public class RunTimeData extends Hashtable<String, RunTimeVariable>
 	}
 
 	/**
-	 * @return the value as a <Type> object
-	 *         null if it doesn't exist or is not a <Type>
-	 *         In case of Boolean, false is returned in stead of null. Be carefull to use this for booleans
+	 * @param aType The type of the Object to return.
+	 * @param aName The name of the variable.
+	 * @return the value as a aType. null if it doesn't exist or is not aType.
+	 *         In case of Boolean, false is returned in stead of null. Be carefull to use this for booleans.
 	 */
 	@SuppressWarnings("unchecked")
 	public <Type> Type getValueAs(Class<Type> aType, String aName)
