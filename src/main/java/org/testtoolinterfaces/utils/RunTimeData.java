@@ -209,6 +209,7 @@ public class RunTimeData extends Hashtable<String, RunTimeVariable>
 	    }
 	    
 	    if ( myParentScope != null ) {
+    		System.out.println( "Parent scope..." );
 	    	myParentScope.print();
 	    }
 	}
