@@ -3,6 +3,8 @@
  */
 package org.testtoolinterfaces.utils;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Hashtable;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -340,4 +342,50 @@ public abstract class XmlHandler extends DefaultHandler
 	{
 		return this.myStartElement;
 	}
+    
+	public static XMLReader getNewXmlReader() throws TTIException
+    {
+		Trace.println(Trace.UTIL, "getNewXmlReader()", true );
+
+		// create a parser
+		SAXParserFactory spf = SAXParserFactory.newInstance();
+		spf.setNamespaceAware(false);
+		SAXParser saxParser;
+
+		try
+		{
+			saxParser = spf.newSAXParser();
+			return saxParser.getXMLReader();
+		}
+		catch (ParserConfigurationException pce)
+		{
+	       	throw new TTIException( pce.getLocalizedMessage(), pce );
+		}
+		catch (SAXException saxe)
+		{
+	       	throw new TTIException( saxe.getLocalizedMessage(), saxe );
+		}
+    }
+
+	public void parse( XMLReader xmlReader, File anXmlFile ) throws TTIException
+    {
+		Trace.println(Trace.UTIL, "parse()", true );
+
+        // assign the handler to the parser
+        xmlReader.setContentHandler(this);
+
+        // parse the document
+        try
+        {
+			xmlReader.parse( anXmlFile.getAbsolutePath() );
+		}
+        catch (IOException ioe)
+		{
+        	throw new TTIException( ioe.getLocalizedMessage(), ioe );
+		}
+        catch (SAXException saxe)
+        {
+        	throw new TTIException( saxe.getLocalizedMessage(), saxe );
+		}
+    }
 }
