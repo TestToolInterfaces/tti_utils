@@ -291,6 +291,10 @@ public class RunTimeData extends Hashtable<String, RunTimeVariable>
 					{
 						varValue = this.getValueAs(File.class, varName).getPath();
 					}
+					else if ( varType.equals(Integer.class) )
+					{
+						varValue = this.getValueAs(Integer.class, varName).toString();
+					}
 
 					returnStrbuf.append( varValue );
 
