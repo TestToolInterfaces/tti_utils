@@ -6,9 +6,13 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class RunTimeData extends Hashtable<String, RunTimeVariable>
 {
 	private static final long	serialVersionUID	= -896399275664941954L;
+    private static final Logger LOG = LoggerFactory.getLogger(RunTimeData.class);
 
 	private RunTimeData myParentScope;
 	
@@ -230,7 +234,7 @@ public class RunTimeData extends Hashtable<String, RunTimeVariable>
 
 	public String substituteVars( String anOriginalString )
 	{
-	    Trace.println(Trace.UTIL, "substituteVars( " + anOriginalString + " )", true);
+	    LOG.trace(Mark.UTIL, anOriginalString);
 		StringBuffer returnStrbuf;
 
 		int firstEscape = anOriginalString.indexOf('\\');

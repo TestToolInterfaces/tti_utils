@@ -1,6 +1,9 @@
 package org.testtoolinterfaces.utils;
 
-import java.util.ArrayList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MarkerFactory;
+
 
 /**
  * Class that can be used to print Trace statements. Actual printing
@@ -9,9 +12,12 @@ import java.util.ArrayList;
  * 
  * @author Arjan Kranenburg
  */
+@Deprecated // Use org.slf4j.Logger instead
 public class Trace
 {
-	/**
+    private static final Logger LOG = LoggerFactory.getLogger(Trace.class);
+
+    /**
 	 * Enumeration to specify the level (amount) of trace to be printed.
 	 *  
 	 * @author Arjan Kranenburg
@@ -44,13 +50,15 @@ public class Trace
 
 	private static Trace instance = new Trace();
 
-	private boolean myEnabled = false;
-	private ArrayList<String> myBaseClasses = new ArrayList<String>();
-	private String myTraceClass = "";
-	private LEVEL myTraceLevel = LEVEL.EXEC_PLUS;
-	private int myDepth = 3;
 
-	private final static String NEWLINE = System.getProperty( "line.separator" );
+	
+//	private boolean myEnabled = false;
+//	private ArrayList<String> myBaseClasses = new ArrayList<String>();
+//	private String myTraceClass = "";
+//	private LEVEL myTraceLevel = LEVEL.EXEC_PLUS;
+//	private int myDepth = 3;
+
+//	private final static String NEWLINE = System.getProperty( "line.separator" );
 
 	/**
 	 * 
@@ -63,385 +71,169 @@ public class Trace
 	/**
 	 * Will provide an instance of this class
 	 * 
-	 * @return the one instance of the TraceConfiguration class
+	 * @return the one instance of the Trace class
+	 * 
+	 * @deprecated handled by logger
 	 */
+	@Deprecated
 	public static Trace getInstance()
 	{
 		return instance;
 	}
 
 	/**
-	 * Add a baseclass that will be removed from the class string, to keep the trace readable
-	 * 
-	 * @param aBaseClass the BaseClass to add
+	 * @deprecated Does nothing, functionality is handled by logger
 	 */
-	public void addBaseClass(String aBaseClass)
-	{
-		myBaseClasses.add(aBaseClass);
+	@Deprecated
+	public void addBaseClass(String aBaseClass)	{
+		// Nop, handled by logger
 	}
 
 	/**
-	 * Sets the depth to keep tracing after the trace class is reached
-	 * 
-	 * @param aDepth the Depth to set
+	 * @deprecated Does nothing, functionality is handled by logger
 	 */
-	public void setDepth(int aDepth)
-	{
-		myDepth = aDepth;
+	@Deprecated
+	public void setDepth(int aDepth) {
+		// Nop, handled by logger
 	}
 
 	/**
-	 * Sets the enable flag.
-	 * 	true:  Trace is printed as soon as the trace class is reached
-	 *  false: Trace is not printed
-	 *  
-	 * @param anEnabled the Enable flag to set
+	 * @deprecated Does nothing, functionality is handled by logger
 	 */
-	public void setEnabled(boolean anEnabled)
-	{
-		myEnabled = anEnabled;
+	@Deprecated
+	public void setEnabled(boolean anEnabled) {
+		// Nop, handled by logger
 	}
 
 	/**
-	 * The Trace class that triggers printing traces if the enable flag is true
-	 * 
-	 * @param aTraceClass the TraceClass to set
+	 * @deprecated Does nothing, functionality is handled by logger
 	 */
-	public void setTraceClass(String aTraceClass)
-	{
-		myTraceClass = aTraceClass;
+	@Deprecated
+	public void setTraceClass(String aTraceClass) {
+		// Nop, handled by logger
 	}
 
 	/**
-	 * Sets the level (i.e. the amount) of tracing to be printed.
-	 * When set to HIGH, only the most important trace statements are printed
-	 * When set to ALL, all trace statements are printed
-	 * 
-	 * Of course printing will only start when other requirements are met
-	 * (i.e. enabled, Trace class, depth).
-	 * 
-	 * @param aTraceLevel the TraceLevel to set
+	 * @deprecated Does nothing, functionality is handled by logger
 	 */
-	public void setTraceLevel(LEVEL aTraceLevel)
-	{
-		myTraceLevel = aTraceLevel;
+	@Deprecated
+	public void setTraceLevel(LEVEL aTraceLevel) {
+		// Nop, handled by logger
 	}
 
 	/**
 	 * Prints the class and this method without any arguments.
-	 * 
-	 * Printing is only done when Trace requirements is met (i.e. enabled,
-	 * Trace class, depth, LEVEL)
+	 * Actual printing depends on logger.
 	 * 
 	 * @param aLevel specifies at what level this trace should be printed
+	 * 
+	 * @deprecated Use logger
 	 */
+	@Deprecated
 	public static void println(LEVEL aLevel)
 	{
-		getInstance()._println(aLevel, true);
+		LOG.trace(MarkerFactory.getMarker( aLevel.toString() ), "");
 	}
 
 	/**
 	 * Prints optionally the class and method without any arguments.
-	 * 
-	 * Printing is only done when Trace requirements is met (i.e. enabled,
-	 * Trace class, depth, LEVEL)
+	 * Actual printing depends on logger.
 	 * 
 	 * @param aLevel 	Specifies at what level this trace should be printed
 	 * @param aMethod 	The method to print.
 	 * 			This could also be used to print a message other than the method.
 	 * 			Then set the aPrintClass flag to false.
-	 * @param aPrintClass Flag to indicate if the class must be printed.
+	 * @param aPrintClass ignored
+	 * 
+	 * @deprecated Use logger
 	 */
+	@Deprecated
 	public static void print(LEVEL aLevel, String aMethod, boolean aPrintClass)
 	{
-		getInstance()._print(aLevel, aMethod, aPrintClass);
+		LOG.trace(MarkerFactory.getMarker( aLevel.toString() ), aMethod);
 	}
 
 	/**
 	 * Prints the trhowable (exception).
-	 * 
-	 * Printing is only done when Trace requirements is met (i.e. enabled,
-	 * Trace class, depth, LEVEL)
+	 * Actual printing depends on logger.
 	 * 
 	 * @param aLevel 	Specifies at what level this trace should be printed
 	 * @param anE		The throwable to print
+	 * 
+	 * @deprecated Use logger
 	 */
+	@Deprecated
 	public static void print(LEVEL aLevel, Throwable anE)
 	{
-		getInstance()._print(aLevel, anE);
+		LOG.trace(MarkerFactory.getMarker( aLevel.toString() ), "", anE);
 	}
 
 	/**
-	 * Prints optionally the class and method without any arguments, terminated
-	 * with a newline.
-	 * 
-	 * Printing is only done when Trace requirements is met (i.e. enabled,
-	 * Trace class, depth, LEVEL)
+	 * Prints optionally the class and method without any arguments.
+	 * Actual printing depends on logger.
 	 * 
 	 * @param aLevel 	Specifies at what level this trace should be printed
 	 * @param aMethod 	The method to print.
 	 * 			This could also be used to print a message other than the method.
 	 * 			Then set the aPrintClass flag to false.
-	 * @param aPrintClass Flag to indicate if the class must be printed.
+	 * @param aPrintClass ignored
+	 * 
+	 * @deprecated Use logger
 	 */
+	@Deprecated
 	public static void println(LEVEL aLevel, String aMethod, boolean aPrintClass)
 	{
-		print(aLevel, aMethod + NEWLINE, aPrintClass);
+		LOG.trace(MarkerFactory.getMarker( aLevel.toString() ), aMethod);
 	}
 
 	/**
 	 * Prints the method without any arguments.
-	 * 
-	 * Printing is only done when Trace requirements is met (i.e. enabled,
-	 * Trace class, depth, LEVEL)
+	 * Actual printing depends on logger.
 	 * 
 	 * @param aLevel 	Specifies at what level this trace should be printed
 	 * @param aMethod 	The method to print.
 	 * 			This could also be used to print a message other than the method.
+	 * 
+	 * @deprecated Use logger
 	 */
+	@Deprecated
 	public static void print(LEVEL aLevel, String aMethod)
 	{
-		print(aLevel, aMethod, false);
+		LOG.trace(MarkerFactory.getMarker( aLevel.toString() ), aMethod);
 	}
 
 	/**
 	 * Prints the method without any arguments, terminated with a newline.
-	 * 
-	 * Printing is only done when Trace requirements is met (i.e. enabled,
-	 * Trace class, depth, LEVEL)
+	 * Actual printing depends on logger.
 	 * 
 	 * @param aLevel 	Specifies at what level this trace should be printed
 	 * @param aMethod 	The method to print.
 	 * 			This could also be used to print a message other than the method.
+	 * 
+	 * @deprecated Use logger
 	 */
+	@Deprecated
 	public static void println(LEVEL aLevel, String aMethod)
 	{
-		println(aLevel, aMethod, false);
+		LOG.trace(MarkerFactory.getMarker( aLevel.toString() ), aMethod);
 	}
 
 	/**
-	 * Prints the message, without any prefix or class.
-	 * 
-	 * Note:
-	 * No newline is printed at the end either. The user itself is responsible for that.
-	 * 
-	 * Printing is only done when Trace requirements is met (i.e. enabled,
-	 * Trace class, depth, LEVEL)
+	 * Same as print(LEVEL aLevel, String aMethod)
 	 * 
 	 * @param aLevel 	Specifies at what level this trace should be printed
 	 * @param aMessage 	The message to print.
+	 * 
+	 * @deprecated Use logger
 	 */
+	@Deprecated
 	public static void append(LEVEL aLevel, String aMessage)
 	{
-		getInstance()._append(aLevel, aMessage);
-	}
-
-	private void _print(LEVEL aLevel, String aMethod, boolean aPrintClass)
-	{
-		if( myEnabled && aLevel.compareTo(myTraceLevel) <= 0)
-		{
-			ArrayList<StackTraceElement> stack = getStackTrace();
-			if (stack.size() > 0)
-			{
-				String className = getClassName(stack);
-				int depth = getDepth(stack, aMethod, className);
-
-				if ( depth <= myDepth )
-				{
-					if (aPrintClass)
-					{
-						String strippedClassPath = getStripedClassPath( stack );
-						aMethod = strippedClassPath + "." + aMethod;
-					}
-					String prefix = getPrefix( depth );
-					System.out.print(prefix + aMethod);
-				}
-			}
-		}
-	}
-
-	private void _append(LEVEL aLevel, String aMethod)
-	{
-		if( myEnabled && aLevel.compareTo(myTraceLevel) <= 0)
-		{
-			ArrayList<StackTraceElement> stack = getStackTrace();
-			if (stack.size() > 0)
-			{
-				String className = getClassName(stack);
-				int depth = getDepth(stack, aMethod, className);
-
-				if ( depth <= myDepth )
-				{
-					System.out.print(aMethod);
-				}
-			}
-		}
-	}
-
-	private void _println(LEVEL aLevel, boolean aPrintClass)
-	{
-		if( myEnabled && aLevel.compareTo(this.myTraceLevel) <= 0)
-		{
-			ArrayList<StackTraceElement> stack = getStackTrace();
-			if (stack.size() > 0)
-			{
-				String method = stack.get(0).getMethodName();
-				_print(aLevel, method + NEWLINE, aPrintClass);
-			}
-		}
-	}
-
-	/**
-	 * 
-	 */
-	private void _print(LEVEL aLevel, Throwable anE)
-	{
-		if( myEnabled && aLevel.compareTo(this.myTraceLevel) <= 0)
-		{
-			ArrayList<StackTraceElement> stack = getStackTrace();
-			if (stack.size() > 0)
-			{
-				String method = stack.get(0).getMethodName();
-				String className = getClassName(stack);
-				int depth = getDepth(stack, method, className);
-				if ( depth <= myDepth )
-				{
-					_print(aLevel, method + NEWLINE, true);
-					anE.printStackTrace(System.out);
-				}
-			}
-		}
+		LOG.trace(MarkerFactory.getMarker( aLevel.toString() ), aMessage);
 	}
 	
-	/**
-	 * Returns a list of classes from the stacktrace.
-	 * The newest class is returned first.
-	 * 
-	 * Only the classes starting with a class in the myBaseClasses are returned
-	 * Also, this Trace class is filtered out as well.
-	 */
-	private ArrayList<StackTraceElement> getStackTrace()
-	{
-		ArrayList<StackTraceElement> aStackTrace = new ArrayList<StackTraceElement>();
-		StackTraceElement[] stack = Thread.currentThread().getStackTrace();
-		String thisTraceClass = Trace.class.getName(); // To filter out
-		for (int i = 0; i<stack.length; i++)
-		{
-			String elementClassName = stack[i].getClassName();
-			for (int j = 0; j < myBaseClasses.size(); j++)
-			{
-				if ( elementClassName.startsWith(myBaseClasses.get(j)) 
-					 && ! elementClassName.equals(thisTraceClass) )
-				{
-					aStackTrace.add(stack[i]);
-				}
-			}
-		}
-		return aStackTrace;
-	}
-	
-	private int getDepth(ArrayList<StackTraceElement> aStack, String aMethod, String aClass)
-	{
-		boolean foundClass = false;
-		int depth = 99;
-
-		for (int i = aStack.size()-1; i>=0; i--)
-		{
-			String stackLine = aStack.get(i).getClassName();
-			String shortElClssName = getStrippedClassName(stackLine);
-
-			if ( foundClass )
-			{
-				depth++;
-			}
-
-			if ( stackLine.equals(myTraceClass) )
-			{
-				foundClass = true;
-				depth = 0;
-			}
-
-			if ( foundClass 
-				 && shortElClssName.endsWith(aClass) 
-				 && aStack.get(i).getMethodName().equals(aMethod) )
-			{
-				return depth;
-			}
-		}
-
-		return depth;
-	}
-
-	private String getClassName(ArrayList<StackTraceElement> aStack)
-	{
-		String className = aStack.get(0).getClassName();
-		String[] classPath = className.split("\\.");
-
-		return classPath[ classPath.length-1 ];
-	}
-	
-	private String getStrippedClassName( String aStackLine )
-	{
-		String shortClassName = aStackLine;
-
-		for (int j = 0; j < myBaseClasses.size(); j++)
-		{
-			if ( aStackLine.startsWith(myBaseClasses.get(j)) )
-			{
-				shortClassName = aStackLine.replaceFirst(myBaseClasses.get(j), "");
-				shortClassName = shortClassName.replaceFirst("\\.", "");
-				
-				// As soon as we have a match, we return the shortened class name
-				return shortClassName;
-			}
-		}
-
-		// Should not get here, but keeping this just in case.
-		return shortClassName; // If no match, we return the stackLine
-	}
-
-	private String getStripedClassPath(ArrayList<StackTraceElement> aStack)
-	{
-		String fullClassPath = aStack.get(0).getClassName();
-
-		String strippedClassPath = fullClassPath;
-		for (int j = 0; j < myBaseClasses.size(); j++)
-		{
-			if ( strippedClassPath.startsWith(myBaseClasses.get(j)) )
-			{
-				strippedClassPath = fullClassPath.replaceFirst(myBaseClasses.get(j), "");
-				strippedClassPath = strippedClassPath.replaceFirst("\\.", "");
-				
-				// As soon as we have a match, we return the shortened class name
-				return strippedClassPath;
-			}
-		}
-
-		// Should not get here, but keeping this just in case.
-		return strippedClassPath; // If no match, we return the stackLine
-	}
-
-	private static String getPrefix( int aDepth )
-	{
-		int i=0;
-		String prefix = "";
-		while ( i++<aDepth )
-		{
-			prefix += "+";
-		}
-		
-		return prefix + " ";
-	}
-	
-	public void dumpSettings()
-	{
-		System.out.println("Enabled:    " + myEnabled);
-		System.out.println("Depth:      " + myDepth);
-		System.out.println("TraceClass: " + myTraceClass);
-		System.out.println("TraceLevel: " + myTraceLevel);
-		for (int j = 0; j < myBaseClasses.size(); j++)
-		{
-			System.out.println("BaseClass:  " + myBaseClasses.get(j));
-		}
+	@Deprecated
+	public void dumpSettings()	{
+		// NOP: only kept to satisfy API
 	}
 }

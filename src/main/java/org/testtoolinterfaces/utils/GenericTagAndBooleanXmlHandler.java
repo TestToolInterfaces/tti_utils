@@ -1,5 +1,7 @@
 package org.testtoolinterfaces.utils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.XMLReader;
 
 /**
@@ -11,11 +13,13 @@ import org.xml.sax.XMLReader;
  */
 public final class GenericTagAndBooleanXmlHandler extends GenericTagAndStringXmlHandler
 {
-	public GenericTagAndBooleanXmlHandler( XMLReader anXmlReader, String aTag )
+    private static final Logger LOG = LoggerFactory.getLogger(GenericTagAndBooleanXmlHandler.class);
+
+    public GenericTagAndBooleanXmlHandler( XMLReader anXmlReader, String aTag )
 	{
 		super(anXmlReader, aTag);
-		Trace.println(Trace.CONSTRUCTOR, "GenericTagAndBooleanXmlHandler( anXmlreader, " + aTag + " )", true);
-	}
+		LOG.trace(Mark.CONSTRUCTOR, "{}, {}, {}", anXmlReader, aTag);
+}
 
 	/**
 	 * @return 	The boolean meaning of the value in the XML field, i.e. if

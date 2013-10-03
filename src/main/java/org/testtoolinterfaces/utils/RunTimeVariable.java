@@ -1,10 +1,13 @@
 package org.testtoolinterfaces.utils;
 
-import org.testtoolinterfaces.utils.Trace;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RunTimeVariable
 {
-	private String myName;
+    private static final Logger LOG = LoggerFactory.getLogger(RunTimeVariable.class);
+
+    private String myName;
 	private Class<?> myType;
 	private Object myValue;
 	
@@ -51,7 +54,7 @@ public class RunTimeVariable
 
 	public void setValue( Object aValue )
 	{
-		Trace.println(Trace.SETTER, "setValue( " + aValue.toString() + " )", true);
+		LOG.trace(Mark.SETTER, "{}", aValue);
 //		if ( myType == aValue.getClass() )
 //	    {
 //			myValue = aValue;

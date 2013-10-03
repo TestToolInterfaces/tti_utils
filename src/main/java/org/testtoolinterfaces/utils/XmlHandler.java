@@ -11,6 +11,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
@@ -24,7 +26,9 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public abstract class XmlHandler extends DefaultHandler
 {
-	/**
+    private static final Logger LOG = LoggerFactory.getLogger(XmlHandler.class);
+
+    /**
      * Called when a start element must be handled. 
      * @note processElementAttributes() and handleStartElement of child element is already called.
      * 
@@ -91,7 +95,7 @@ public abstract class XmlHandler extends DefaultHandler
 	 */
 	public XmlHandler( XMLReader anXmlReader, String aTag )
 	{
-		Trace.println(Trace.CONSTRUCTOR);
+		LOG.trace(Mark.CONSTRUCTOR, aTag);
 
     	myChildElementHandlers = new Hashtable<String, XmlHandler>();
         myXmlReader = anXmlReader;
@@ -106,7 +110,7 @@ public abstract class XmlHandler extends DefaultHandler
 	 */
 	public XmlHandler( String aTag ) throws ParserConfigurationException, SAXException
 	{
-		Trace.println(Trace.CONSTRUCTOR);
+		LOG.trace(Mark.CONSTRUCTOR, aTag);
 
 	    SAXParserFactory spf = SAXParserFactory.newInstance();
 	    spf.setNamespaceAware(false);
@@ -127,7 +131,8 @@ public abstract class XmlHandler extends DefaultHandler
 	 */
 	public void addElementHandler( XmlHandler aHandler )
 	{
-		Trace.println(Trace.UTIL, "addElementHandler( " + aHandler.toString() + " )", true);
+//		Trace.println(Trace.UTIL, "addElementHandler( " + aHandler.toString() + " )", true);
+		LOG.trace(Mark.UTIL, "{}", aHandler);
 
     	myChildElementHandlers.put( aHandler.getStartElement().toLowerCase(), aHandler );
     	aHandler.setParentElementHandler(this);
@@ -142,7 +147,8 @@ public abstract class XmlHandler extends DefaultHandler
 	 */
 	public void addElementHandler( String anElement, XmlHandler aHandler )
 	{
-		Trace.println(Trace.UTIL, "addElementHandler( " + aHandler.toString() + " )", true);
+//		Trace.println(Trace.UTIL, "addElementHandler( " + aHandler.toString() + " )", true);
+		LOG.trace(Mark.UTIL, "{}, {}", anElement, aHandler);
 
     	myChildElementHandlers.put( anElement.toLowerCase(), aHandler );
     	aHandler.setParentElementHandler(this);
@@ -155,7 +161,8 @@ public abstract class XmlHandler extends DefaultHandler
 	 */
 	public void removeElementHandler( String anElement )
 	{
-		Trace.println(Trace.UTIL, "removeStartElementHandler( " + anElement + " )", true);
+//		Trace.println(Trace.UTIL, "removeStartElementHandler( " + anElement + " )", true);
+		LOG.trace(Mark.UTIL, "{}", anElement);
 
     	myChildElementHandlers.remove( anElement.toLowerCase() );
 	}
@@ -168,7 +175,8 @@ public abstract class XmlHandler extends DefaultHandler
 	 */
 	public void setParentElementHandler( XmlHandler aHandler )
 	{
-		Trace.println(Trace.UTIL, "setParentElementHandler( " + aHandler.toString() + " )", true);
+//		Trace.println(Trace.UTIL, "setParentElementHandler( " + aHandler.toString() + " )", true);
+		LOG.trace(Mark.UTIL, "{}", aHandler);
 		myParentElementHandler = aHandler;
 	}
 	
@@ -179,7 +187,8 @@ public abstract class XmlHandler extends DefaultHandler
 	                                String aQualifiedName,
 	                                Attributes anAtt) throws SAXException
 	{
-		Trace.println(Trace.UTIL, "startElement( " + aQualifiedName + " )", true);
+//		Trace.println(Trace.UTIL, "startElement( " + aQualifiedName + " )", true);
+		LOG.trace(Mark.UTIL, "{}, {}, {}, {}", aNamespaceURI, aLocalName, aQualifiedName, anAtt);
 
 		try
 		{
@@ -223,7 +232,8 @@ public abstract class XmlHandler extends DefaultHandler
     final public void characters(char ch[], int start, int length)
             throws SAXException
     {
-		Trace.println(Trace.UTIL);
+//		Trace.println(Trace.UTIL);
+		LOG.trace(Mark.UTIL, "{}, {}, {}", ch, start, length);
 
 		if ( isStartElementHandled )
 		{
@@ -246,7 +256,8 @@ public abstract class XmlHandler extends DefaultHandler
                                   String aQualifiedName )
             throws SAXException
     {
-		Trace.println(Trace.UTIL, "endElement( " + aQualifiedName + " )", true);
+//		Trace.println(Trace.UTIL, "endElement( " + aQualifiedName + " )", true);
+		LOG.trace(Mark.UTIL, "{}, {}, {}", aNamespaceURI, aLocalName, aQualifiedName);
     	
 		isStartElementHandled = false;
     	try
@@ -271,6 +282,7 @@ public abstract class XmlHandler extends DefaultHandler
 	 */
 	public XMLReader getXmlReader()
 	{
+		LOG.trace(Mark.GETTER, "");
 		return myXmlReader;
 	}
 	
@@ -279,7 +291,8 @@ public abstract class XmlHandler extends DefaultHandler
 	 */
 	public String getStartElement()
 	{
-		Trace.println(Trace.GETTER);
+//		Trace.println(Trace.GETTER);
+		LOG.trace(Mark.GETTER, "");
 		return myStartElement;
 	}
 	
@@ -319,7 +332,8 @@ public abstract class XmlHandler extends DefaultHandler
 	 */
 	public void reset( )
 	{
-		Trace.println(Trace.UTIL);
+//		Trace.println(Trace.UTIL);
+		LOG.trace(Mark.UTIL, "");
 		// Nop
 	}
 
@@ -345,7 +359,8 @@ public abstract class XmlHandler extends DefaultHandler
     
 	public static XMLReader getNewXmlReader() throws TTIException
     {
-		Trace.println(Trace.UTIL, "getNewXmlReader()", true );
+//		Trace.println(Trace.UTIL, "getNewXmlReader()", true );
+		LOG.trace(Mark.UTIL, "");
 
 		// create a parser
 		SAXParserFactory spf = SAXParserFactory.newInstance();
@@ -369,7 +384,8 @@ public abstract class XmlHandler extends DefaultHandler
 
 	public void parse( XMLReader xmlReader, File anXmlFile ) throws TTIException
     {
-		Trace.println(Trace.UTIL, "parse()", true );
+//		Trace.println(Trace.UTIL, "parse()", true );
+		LOG.trace(Mark.UTIL, "");
 
         // assign the handler to the parser
         xmlReader.setContentHandler(this);

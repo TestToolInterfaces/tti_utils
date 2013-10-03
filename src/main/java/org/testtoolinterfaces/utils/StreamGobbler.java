@@ -2,7 +2,8 @@ package org.testtoolinterfaces.utils;
 
 import java.io.*;
 
-import org.testtoolinterfaces.utils.Trace;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -14,7 +15,9 @@ import org.testtoolinterfaces.utils.Trace;
  */
 public class StreamGobbler extends Thread
 {
-	public static long MAX_WAIT = 2;
+    private static final Logger LOG = LoggerFactory.getLogger(StreamGobbler.class);
+
+    public static long MAX_WAIT = 2;
 	
     private InputStream myIs;
     private OutputStream myOs;
@@ -66,7 +69,7 @@ public class StreamGobbler extends Thread
     */
     public void run()
     {
-		Trace.println(Trace.UTIL);
+		LOG.debug(Mark.UTIL, "");
         try
         {
             PrintWriter pw = null;
@@ -83,14 +86,14 @@ public class StreamGobbler extends Thread
                 if (pw != null)
                 {
                     pw.println(line);
-            		Trace.println(Trace.ALL, "Output written to file");
+            		LOG.debug("Output written to file");
                 }
-                Trace.println(Trace.EXEC_PLUS, line);    
+                LOG.debug( line );
             }
             if (pw != null)
             {
                 pw.flush();
-        		Trace.println(Trace.ALL, "Output flushed");
+        		LOG.debug("Output flushed");
             }
         }
         catch (IOException ioe)

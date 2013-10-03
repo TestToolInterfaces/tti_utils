@@ -1,5 +1,7 @@
 package org.testtoolinterfaces.utils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.XMLReader;
 
@@ -20,7 +22,9 @@ import org.xml.sax.XMLReader;
  */
 public class GenericTagAndStringXmlHandler extends XmlHandler
 {
-	boolean myPreserveWhites;
+    private static final Logger LOG = LoggerFactory.getLogger(GenericTagAndStringXmlHandler.class);
+
+    boolean myPreserveWhites;
 	private String myValue = "";
 	
 	/**
@@ -33,7 +37,7 @@ public class GenericTagAndStringXmlHandler extends XmlHandler
 	public GenericTagAndStringXmlHandler( XMLReader anXmlReader, String aTag, boolean aPreserveWhites )
 	{
 		super(anXmlReader, aTag);
-		Trace.println(Trace.CONSTRUCTOR, "GenericTagAndStringXmlHandler( anXmlreader, " + aTag + " )", true);
+		LOG.trace(Mark.CONSTRUCTOR, "{}, {}, {}", anXmlReader, aTag, aPreserveWhites);
 		
 		myPreserveWhites = aPreserveWhites;
 	}
@@ -58,7 +62,7 @@ public class GenericTagAndStringXmlHandler extends XmlHandler
 	@Override
 	public void handleCharacters(String aValue) throws TTIException
 	{
-		Trace.println(Trace.SUITE, "handleCharacters( " + aValue + " )", true);
+		LOG.trace(Mark.SUITE, aValue);
 		String value = aValue;
 		if ( ! myPreserveWhites )
 		{
@@ -96,7 +100,7 @@ public class GenericTagAndStringXmlHandler extends XmlHandler
 	 */
 	public String getValue()
 	{
-		Trace.println(Trace.GETTER);
+		LOG.trace(Mark.GETTER, "");
 		String value = myValue;
 		if ( ! myPreserveWhites )
 		{
@@ -117,7 +121,7 @@ public class GenericTagAndStringXmlHandler extends XmlHandler
 	@Override
 	public void reset( )
 	{
-		Trace.println(Trace.UTIL);
+		LOG.trace(Mark.UTIL, "");
 		myValue = "";
 	}
 
