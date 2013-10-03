@@ -3,7 +3,6 @@ package org.testtoolinterfaces.utils.helper;
 import org.testtoolinterfaces.utils.GenericTagAndBooleanXmlHandler;
 import org.testtoolinterfaces.utils.GenericTagAndStringXmlHandler;
 import org.testtoolinterfaces.utils.TTIException;
-import org.testtoolinterfaces.utils.Trace;
 import org.testtoolinterfaces.utils.XmlHandler;
 import org.xml.sax.Attributes;
 import org.xml.sax.XMLReader;
@@ -46,13 +45,12 @@ public class SubXmlHandler extends XmlHandler
 	public SubXmlHandler( XMLReader anXmlReader, String aStartTag )
 	{
 		super(anXmlReader, aStartTag);
-		Trace.println(Trace.CONSTRUCTOR, "TestStepXmlHandler( anXmlreader )", true);
 
 		myTagXmlHandler = new GenericTagAndStringXmlHandler(anXmlReader, TAG_ELEMENT);
-		this.addElementHandler(TAG_ELEMENT, myTagXmlHandler);
+		this.addElementHandler(myTagXmlHandler);
 
 		myBoolXmlHandler = new GenericTagAndBooleanXmlHandler(anXmlReader, BOOL_ELEMENT);
-		this.addElementHandler(BOOL_ELEMENT, myBoolXmlHandler);
+		this.addElementHandler(myBoolXmlHandler);
 
 		reset();
 	}
@@ -60,8 +58,6 @@ public class SubXmlHandler extends XmlHandler
 	@Override
     public void processElementAttributes(String aQualifiedName, Attributes att) throws TTIException
     {
-		Trace.println(Trace.SUITE, "processElementAttributes( "
-				+ aQualifiedName + " )", true );
     	if (aQualifiedName.equalsIgnoreCase(this.getStartElement()))
     	{
 		    for (int i = 0; i < att.getLength(); i++)
@@ -69,7 +65,6 @@ public class SubXmlHandler extends XmlHandler
 		    	if (att.getQName(i).equalsIgnoreCase(ATTRIBUTE_ATTRIBUTE))
 		    	{
 		    		myAttribute = att.getValue(i);
-		    		Trace.println( Trace.ALL, "        myAttribute -> " + myAttribute);
     	    	}
 		    }
     	}
@@ -102,7 +97,6 @@ public class SubXmlHandler extends XmlHandler
 	@Override
 	public void handleReturnFromChildElement(String aQualifiedName, XmlHandler aChildXmlHandler)
 	{
-		Trace.println(Trace.SUITE);
     	if (aQualifiedName.equalsIgnoreCase(TAG_ELEMENT))
     	{
     		myTagValue  = myTagXmlHandler.getValue();
@@ -134,8 +128,6 @@ public class SubXmlHandler extends XmlHandler
 	@Override
 	public void reset()
 	{
-		Trace.println(Trace.SUITE);
-
 		myTagValue = "";
 		myBoolValue = false;
 		myAttribute = "";

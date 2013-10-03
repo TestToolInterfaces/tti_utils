@@ -131,7 +131,6 @@ public abstract class XmlHandler extends DefaultHandler
 	 */
 	public void addElementHandler( XmlHandler aHandler )
 	{
-//		Trace.println(Trace.UTIL, "addElementHandler( " + aHandler.toString() + " )", true);
 		LOG.trace(Mark.UTIL, "{}", aHandler);
 
     	myChildElementHandlers.put( aHandler.getStartElement().toLowerCase(), aHandler );
@@ -147,7 +146,6 @@ public abstract class XmlHandler extends DefaultHandler
 	 */
 	public void addElementHandler( String anElement, XmlHandler aHandler )
 	{
-//		Trace.println(Trace.UTIL, "addElementHandler( " + aHandler.toString() + " )", true);
 		LOG.trace(Mark.UTIL, "{}, {}", anElement, aHandler);
 
     	myChildElementHandlers.put( anElement.toLowerCase(), aHandler );
